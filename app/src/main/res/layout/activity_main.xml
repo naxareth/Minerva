@@ -12,18 +12,14 @@
         android:id="@+id/tvLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello There!" />
+        android:text="MINERVA" />
 
-    <EditText
-        android:id="@+id/etInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="" />
 
     <Button
-        android:id="@+id/btnClick"
+        android:id="@+id/btnStart"
+        style="@android:style/Widget.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Click Here!" />
+        android:text="Get Started" />
 
 </LinearLayout>
