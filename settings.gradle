@@ -14,3 +14,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Minerva_1.0"
 include ':app'
+include ':animesource'
+include ':animesource'
+include ':animesource'
+include ':minervacommon'
