@@ -5,10 +5,10 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="animesource">
+      <SelectionState runConfigName="minervacommon">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="minervacommon">
+      <SelectionState runConfigName="animesource">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
