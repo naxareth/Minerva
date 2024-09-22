@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-             android:layout_height="match_parent">
+             android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView5"
@@ -18,9 +19,9 @@
         tools:layout_editor_absoluteY="117dp" />
 
     <EditText
-        android:id="@+id/editTextTex5"
+        android:id="@+id/etSignUpUser"
         android:layout_width="329dp"
-        android:layout_height="46dp"
+        android:layout_height="48dp"
         android:ems="10"
         android:inputType="text"
         android:text="Username:"
@@ -29,9 +30,9 @@
         tools:layout_editor_absoluteY="246dp" />
 
     <EditText
-        android:id="@+id/editTextTex5"
+        android:id="@+id/etSignUpPass"
         android:layout_width="329dp"
-        android:layout_height="44dp"
+        android:layout_height="48dp"
         android:ems="10"
         android:inputType="text"
         android:text="Password:"
@@ -42,7 +43,7 @@
         app:layout_constraintVertical_bias="0.467" />
 
     <EditText
-        android:id="@+id/editTextTex6"
+        android:id="@+id/etSignUpConfirmPass"
         android:layout_width="325dp"
         android:layout_height="61dp"
         android:ems="10"
@@ -55,9 +56,10 @@
         app:layout_constraintVertical_bias="0.583" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btSignUp"
         android:layout_width="118dp"
         android:layout_height="54dp"
         android:text="Sign Up"
         tools:layout_editor_absoluteX="136dp"
         tools:layout_editor_absoluteY="518dp" />
+</LinearLayout>
