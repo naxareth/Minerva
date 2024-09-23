@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-             android:layout_height="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main"
     android:orientation="vertical">
 
     <TextView
@@ -19,23 +20,23 @@
         tools:layout_editor_absoluteY="117dp" />
 
     <EditText
-        android:id="@+id/etSignUpUser"
+        android:id="@+id/etSignEmail"
         android:layout_width="329dp"
         android:layout_height="48dp"
         android:ems="10"
         android:inputType="text"
-        android:text="Username:"
+        android:hint="Email:"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="246dp" />
 
     <EditText
-        android:id="@+id/etSignUpPass"
+        android:id="@+id/etSignPass"
         android:layout_width="329dp"
         android:layout_height="48dp"
         android:ems="10"
         android:inputType="text"
-        android:text="Password:"
+        android:hint="Password:"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,12 +44,12 @@
         app:layout_constraintVertical_bias="0.467" />
 
     <EditText
-        android:id="@+id/etSignUpConfirmPass"
+        android:id="@+id/etSignConfirmPass"
         android:layout_width="325dp"
         android:layout_height="61dp"
         android:ems="10"
         android:inputType="text"
-        android:text="Confirm Password:"
+        android:hint="Confirm Password:"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

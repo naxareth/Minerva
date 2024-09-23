@@ -6,24 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center"
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/tvLabel"
+        android:text="@string/app_name"
+        android:textColor="@color/black"
+        android:textSize="50sp"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello There!" />
-
-    <EditText
-        android:id="@+id/etInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="" />
-
-    <Button
-        android:id="@+id/btnClick"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Click Here!" />
-
+        android:layout_height="wrap_content"/>
 </LinearLayout>
