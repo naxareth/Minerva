@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/main"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FBFBFB"
+    tools:context=".LoginActivity">
+
+    <TextView
+        android:id="@+id/tvReminder"
+        android:layout_width="193dp"
+        android:layout_height="62dp"
+        android:text="THIS PAGE IS PROTECTED BY THE MEMBER TO
+ENSURE YOU’RE NOT A BOT!"
+        tools:layout_editor_absoluteX="99dp"
+        tools:layout_editor_absoluteY="542dp" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="236dp"
+        android:layout_height="64dp"
+        android:text="MINERVA"
+        android:textAlignment="center"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="112dp" />
+
+    <TextView
+        android:id="@+id/tvDesc"
+        android:layout_width="225dp"
+        android:layout_height="26dp"
+        android:text="Enjoy the  world of entertainment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.532"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="207dp" />
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="329dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="Email:"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="329dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="Username:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="276dp" />
+
+    <Button
+        android:id="@+id/btLogin"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        android:text="Login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="480dp" />
+
+    <CheckBox
+        android:id="@+id/cbRememberMe"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        android:text="Remember Me"
+        tools:layout_editor_absoluteX="49dp"
+        tools:layout_editor_absoluteY="419dp" />
+
+    <TextView
+        android:id="@+id/tvNewToMinerva"
+        android:layout_width="109dp"
+        android:layout_height="27dp"
+        android:text="New to Minerva?"
+        tools:layout_editor_absoluteX="49dp"
+        tools:layout_editor_absoluteY="480dp" />
+
+    <Button
+        android:id="@+id/btSignUpNow"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        android:text="Sign Up Now"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="480dp" />
+
+</LinearLayout>
