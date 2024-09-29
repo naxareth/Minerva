@@ -8,22 +8,4 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tvLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello There!" />
-
-    <EditText
-        android:id="@+id/etInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="" />
-
-    <Button
-        android:id="@+id/btnClick"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Click Here!" />
-
 </LinearLayout>
