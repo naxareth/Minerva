@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="fontColor1">#FF000000</color>
-    <color name="fontColor2">#BDD1C5</color>
-    <color name="taskbar">#D3A29D</color>
-    <color name="bgColor">#F6306B</color>
-    <color name="button">#2F4BF8</color>
-    <color name="moreicon">#1D083E</color>
-</resources>
