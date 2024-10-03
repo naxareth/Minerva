@@ -15,6 +15,7 @@ import com.example.minerva_10.api.responses.LoginResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var etEmail: EditText
@@ -35,31 +36,70 @@ class LoginActivity : AppCompatActivity() {
             val email = etEmail.text.toString()
             val password = etPassword.text.toString()
 
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val loginRequest = LoginRequest(email, password)
-            RetrofitClient.api.login(loginRequest).enqueue(object : Callback<LoginResponse> {
-                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                    if (response.isSuccessful) {
-                        val loginResponse = response.body()
-                        val token = loginResponse?.token
-                        val message = loginResponse?.message
-
-                        // Use the token and message variables to do something
-                        Toast.makeText(this@LoginActivity, "Login successful: $message", Toast.LENGTH_SHORT).show()
-                    } else {
-                        // Handle the error
-                        Toast.makeText(this@LoginActivity, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    // Handle the error
-                    Toast.makeText(this@LoginActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
+            login(loginRequest)
         }
+
         btSignUp.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    private fun login(loginRequest: LoginRequest) {
+        RetrofitClient.api.login(loginRequest).enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.isSuccessful) {
+                    val loginResponse = response.body()
+                    val token = loginResponse?.token
+                    val message = loginResponse?.message
+
+                    if (token != null && message != null) {
+                        // Store the token securely
+                        // ...
+
+                        Toast.makeText(this@LoginActivity, "Login successful: $message", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@LoginActivity, "Invalid response", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    handleErrorResponse(response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                handleFailureError(t)
+            }
+        })
+    }
+
+    private fun handleErrorResponse(code: Int) {
+        when (code) {
+            404 -> {
+                Toast.makeText(this, "Account not found", Toast.LENGTH_SHORT).show()
+            }
+            401 -> {
+                Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show()
+            }
+            422 -> {
+                Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Toast.makeText(this, "Error: $code", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun handleFailureError(t: Throwable) {
+        if (t is IOException) {
+            Toast.makeText(this, "Account not found", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
         }
     }
 }

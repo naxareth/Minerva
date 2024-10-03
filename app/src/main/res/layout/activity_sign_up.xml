@@ -69,11 +69,27 @@
         android:ems="10"
         android:hint="Password:"
         android:inputType="text"
+        app:passwordToggleEnabled="true"
+        app:counterEnabled="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.569" />
+
+
+    <EditText
+        android:id="@+id/etConfirmPassword"
+        android:layout_width="329dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:hint="Confirm Password:"
+        android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.639" />
 
     <Button
         android:id="@+id/btSignRegister"
@@ -85,5 +101,5 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.741" />
+        app:layout_constraintVertical_bias="0.784" />
 </androidx.constraintlayout.widget.ConstraintLayout>
