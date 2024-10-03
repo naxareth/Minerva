@@ -64,6 +64,10 @@ class LoginActivity : AppCompatActivity() {
                         // ...
 
                         Toast.makeText(this@LoginActivity, "Login successful: $message", Toast.LENGTH_SHORT).show()
+                        // Navigate to HomeActivity
+                        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                        startActivity(intent)
+                        finish()
                     } else {
                         Toast.makeText(this@LoginActivity, "Invalid response", Toast.LENGTH_SHORT).show()
                     }
