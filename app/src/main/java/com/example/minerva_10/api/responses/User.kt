@@ -58,3 +58,7 @@ data class FavoriteResource(
     val created_at: String,
     val user_id: Int
 )
+
+data class FavoriteResponse(
+    val data: List<FavoriteResource>
+)

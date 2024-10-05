@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.LoginRequest
 import com.example.minerva_10.api.responses.LoginResponse
+import com.example.minerva_10.views.TokenActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -51,6 +52,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // ...
+
     private fun login(loginRequest: LoginRequest) {
         RetrofitClient.api.login(loginRequest).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
@@ -63,7 +66,9 @@ class LoginActivity : AppCompatActivity() {
                         // Store the token securely
                         // ...
 
-                        Toast.makeText(this@LoginActivity, "Login successful: $message", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@LoginActivity, TokenActivity::class.java)
+                        intent.putExtra("token", token)
+                        startActivity(intent)
                     } else {
                         Toast.makeText(this@LoginActivity, "Invalid response", Toast.LENGTH_SHORT).show()
                     }
