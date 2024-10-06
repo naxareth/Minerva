@@ -1,17 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="120dp"
-    android:layout_height="180dp"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="140dp"
+    android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
-    android:background="#E0E0E0">
+    android:orientation="vertical">
 
-    <!-- TextView to show the title of each item -->
+    <!-- ImageView to show the item's image -->
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop" />
+
+    <!-- TextView to show the title of each item below the image -->
     <TextView
         android:id="@+id/itemTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:text="Title"
-        android:layout_gravity="center"
-        android:textSize="16sp"
-        android:textColor="#000000" />
-</FrameLayout>
+        android:textSize="10sp"
+        android:textColor="#F6306B"
+        android:gravity="center"
+        android:padding="4dp" />
+
+</LinearLayout>
+
+
+

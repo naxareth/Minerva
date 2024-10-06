@@ -3,8 +3,10 @@ package com.example.minerva_10
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 
 class SubAdapter(private val items: List<Item>) :
     RecyclerView.Adapter<SubAdapter.ItemViewHolder>() {
@@ -24,11 +26,16 @@ class SubAdapter(private val items: List<Item>) :
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val title: TextView = view.findViewById(R.id.itemTitle)
+        private val imageView: ImageView = view.findViewById(R.id.itemImage)
 
         fun bind(item: Item) {
-            title.text = item.title // Bind the item title to the TextView
+            title.text = item.title
+            // Use Coil to load the image from the URL
+            imageView.load(item.image)
         }
     }
 }
+
+
 
 
