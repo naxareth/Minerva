@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FBFBFB">
+    android:background="@color/black">
 
     <TextView
         android:id="@+id/textView3"
@@ -12,8 +12,9 @@
         android:layout_height="62dp"
         android:text="THIS PAGE IS PROTECTED BY THE MEMBER TO
 ENSURE YOU’RE NOT A BOT!"
-        tools:layout_editor_absoluteX="99dp"
-        tools:layout_editor_absoluteY="542dp" />
+        android:textColor="@color/white"
+        tools:layout_editor_absoluteX="136dp"
+        tools:layout_editor_absoluteY="557dp" />
 
     <TextView
         android:id="@+id/textView"
@@ -21,6 +22,7 @@ ENSURE YOU’RE NOT A BOT!"
         android:layout_height="64dp"
         android:text="MINERVA"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -32,6 +34,7 @@ ENSURE YOU’RE NOT A BOT!"
         android:layout_width="225dp"
         android:layout_height="26dp"
         android:text="Enjoy the  world of entertainment"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.532"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,10 +47,12 @@ ENSURE YOU’RE NOT A BOT!"
         android:ems="10"
         android:inputType="text"
         android:text="Password:"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.478" />
 
     <EditText
         android:id="@+id/editTextText"
@@ -56,6 +61,7 @@ ENSURE YOU’RE NOT A BOT!"
         android:ems="10"
         android:inputType="text"
         android:text="Username:"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="276dp" />
@@ -65,6 +71,7 @@ ENSURE YOU’RE NOT A BOT!"
         android:layout_width="150dp"
         android:layout_height="35dp"
         android:text="Remember Me"
+        android:textColor="@color/white"
         tools:layout_editor_absoluteX="49dp"
         tools:layout_editor_absoluteY="419dp" />
 
@@ -73,6 +80,7 @@ ENSURE YOU’RE NOT A BOT!"
         android:layout_width="109dp"
         android:layout_height="27dp"
         android:text="New to Minerva?"
+        android:textColor="@color/white"
         tools:layout_editor_absoluteX="49dp"
         tools:layout_editor_absoluteY="480dp" />
 
