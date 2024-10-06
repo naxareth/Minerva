@@ -1,18 +1,16 @@
-package com.example.minerva_10
+package com.example.minerva_10.views
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.example.minerva_10.HomeActivity
+import com.example.minerva_10.R
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.LoginRequest
 import com.example.minerva_10.api.responses.LoginResponse
-import com.example.minerva_10.views.TokenActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -66,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
                         // Store the token securely
                         // ...
 
-                        val intent = Intent(this@LoginActivity, TokenActivity::class.java)
+                        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                         intent.putExtra("token", token)
                         startActivity(intent)
                     } else {

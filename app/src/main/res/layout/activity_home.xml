@@ -8,75 +8,24 @@
         android:id="@+id/fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
 
-    <TextView
-        android:id="@+id/MinervaTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:padding="16dp"
-        android:background="@drawable/background_color"
-        android:fontFamily="sans-serif-condensed-medium"
-        android:text="Minerva"
-        android:textColor="@color/fontColor2"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@+id/fragment_container" />
 
-    <LinearLayout
+
+    </FrameLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_bar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="#E0E0E0"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Home Icon -->
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="12dp"
-            android:background="@color/bgColor"
-            android:src="@drawable/home_24px"
-            android:contentDescription="Home button"/>
-
-        <!-- Search Icon -->
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="12dp"
-            android:background="@color/bgColor"
-            android:src="@drawable/search_24px"
-            android:contentDescription="Search button"/>
-
-        <!-- Favorite Icon -->
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="12dp"
-            android:background="@drawable/background_color"
-            android:src="@drawable/favorite_24px"
-            android:contentDescription="Favorite button"/>
-
-        <!-- More Options Icon -->
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="12dp"
-            android:background="@color/moreicon"
-            android:src="@drawable/more_horiz_24px"
-            android:contentDescription="More options button"/>
-    </LinearLayout>
-
+        android:enabled="true"
+        app:menu="@menu/bottom_nav_bar"
+        app:labelVisibilityMode="labeled"
+        app:itemPaddingBottom="10dp"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
