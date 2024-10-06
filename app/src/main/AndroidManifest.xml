@@ -17,7 +17,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".HomeActivity"
+            android:name=".views.HomeActivity"
             android:exported="false" />
         <activity
             android:name=".views.FavoriteActivity"

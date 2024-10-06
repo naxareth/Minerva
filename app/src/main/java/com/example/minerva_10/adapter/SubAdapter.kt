@@ -1,4 +1,4 @@
-package com.example.minerva_10
+package com.example.minerva_10.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.minerva_10.R
+import com.example.minerva_10.api.responses.Item
 
 class SubAdapter(private val items: List<Item>) :
     RecyclerView.Adapter<SubAdapter.ItemViewHolder>() {

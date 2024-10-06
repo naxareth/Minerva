@@ -1,4 +1,4 @@
-package com.example.minerva_10.views
+package com.example.minerva_10.fragments
 
 import android.os.Bundle
 import android.util.Log

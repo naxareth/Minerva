@@ -1,4 +1,4 @@
-package com.example.minerva_10.api
+package com.example.minerva_10.api.responses
 
 data class AnimeResponse(
     val results: List<Result>

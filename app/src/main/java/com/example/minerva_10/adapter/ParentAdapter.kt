@@ -1,4 +1,4 @@
-package com.example.minerva_10
+package com.example.minerva_10.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.minerva_10.R
+import com.example.minerva_10.api.responses.Category
 
 class ParentAdapter(private val categories: List<Category>) :
     RecyclerView.Adapter<ParentAdapter.CategoryWithItemsViewHolder>() {

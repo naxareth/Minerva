@@ -1,11 +1,11 @@
-package com.example.minerva_10
+package com.example.minerva_10.views
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import com.example.minerva_10.views.FavoriteFragment
+import com.example.minerva_10.fragments.HomeFragment
+import com.example.minerva_10.R
+import com.example.minerva_10.fragments.FavoriteFragment
 
 class HomeActivity : AppCompatActivity() {
 

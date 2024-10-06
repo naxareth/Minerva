@@ -1,4 +1,4 @@
-package com.example.minerva_10
+package com.example.minerva_10.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.minerva_10.adapter.ParentAdapter
+import com.example.minerva_10.R
 import com.example.minerva_10.api.RetrofitClient
+import com.example.minerva_10.api.responses.Category
+import com.example.minerva_10.api.responses.Item
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 

@@ -1,4 +1,4 @@
-package com.example.minerva_10.api
+package com.example.minerva_10.api.interfaces
 
 import com.example.minerva_10.api.responses.Favorite
 import com.example.minerva_10.api.responses.FavoriteResource
@@ -9,7 +9,6 @@ import com.example.minerva_10.api.responses.LogoutResponse
 import com.example.minerva_10.api.responses.ProfileResponse
 import com.example.minerva_10.api.responses.RegisterRequest
 import com.example.minerva_10.api.responses.RegisterResponse
-import com.example.minerva_10.api.responses.User
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -19,7 +18,6 @@ import retrofit2.http.DELETE
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface ApiInterface {
     // Authentication Endpoints

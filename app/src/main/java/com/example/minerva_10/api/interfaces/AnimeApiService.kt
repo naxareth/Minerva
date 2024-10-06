@@ -1,5 +1,6 @@
-package com.example.minerva_10.api
+package com.example.minerva_10.api.interfaces
 
+import com.example.minerva_10.api.responses.AnimeResponse
 import retrofit2.http.GET
 
 interface AnimeApiService {
