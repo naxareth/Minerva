@@ -25,31 +25,39 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        etEmail = findViewById(R.id.etEmail)
-        etPassword = findViewById(R.id.etPassword)
-        btLogin = findViewById(R.id.btLogin)
-        btSignUp = findViewById(R.id.btSignUpNow)
+        val sharedPreferences = getSharedPreferences("token_prefs", MODE_PRIVATE)
+        val token = sharedPreferences.getString("token", null)
 
-        btLogin.setOnClickListener {
-            val email = etEmail.text.toString()
-            val password = etPassword.text.toString()
+        if (token != null) {
+            val intent = Intent(this, HomeActivity::class.java)
+            intent.putExtra("token", token)
+            startActivity(intent)
+            finish()
+        } else {
+            etEmail = findViewById(R.id.etEmail)
+            etPassword = findViewById(R.id.etPassword)
+            btLogin = findViewById(R.id.btLogin)
+            btSignUp = findViewById(R.id.btSignUpNow)
 
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            btLogin.setOnClickListener {
+                val email = etEmail.text.toString()
+                val password = etPassword.text.toString()
+
+                if (email.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                val loginRequest = LoginRequest(email, password)
+                login(loginRequest)
             }
 
-            val loginRequest = LoginRequest(email, password)
-            login(loginRequest)
-        }
-
-        btSignUp.setOnClickListener {
-            val intent = Intent(this, SignUpActivity::class.java)
-            startActivity(intent)
+            btSignUp.setOnClickListener {
+                val intent = Intent(this, SignUpActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
-
-    // ...
 
     private fun login(loginRequest: LoginRequest) {
         RetrofitClient.api.login(loginRequest).enqueue(object : Callback<LoginResponse> {
@@ -61,7 +69,10 @@ class LoginActivity : AppCompatActivity() {
 
                     if (token != null && message != null) {
                         // Store the token securely
-                        // ...
+                        val sharedPreferences = getSharedPreferences("token_prefs", MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putString("token", token)
+                        editor.apply()
 
                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                         intent.putExtra("token", token)

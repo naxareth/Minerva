@@ -36,60 +36,86 @@
         app:layout_constraintVertical_bias="0.238" />
 
 
-    <EditText
-        android:id="@+id/etSignEmail"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSignEmail"
         android:layout_width="329dp"
         android:layout_height="48dp"
-        android:ems="10"
-        android:hint="Email:"
-        android:inputType="textEmailAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499" />
+        app:layout_constraintVertical_bias="0.499">
 
-    <EditText
-        android:id="@+id/etSignName"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSignEmail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:hint="Email:"
+            android:inputType="textEmailAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSignName"
         android:layout_width="329dp"
         android:layout_height="48dp"
-        android:ems="10"
-        android:hint="Username:"
-        android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.428" />
+        app:layout_constraintVertical_bias="0.428">
 
-    <EditText
-        android:id="@+id/etSignPass"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSignName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:hint="Username:"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSignPass"
         android:layout_width="329dp"
         android:layout_height="48dp"
-        android:ems="10"
-        android:hint="Password:"
-        android:inputType="text"
-        app:passwordToggleEnabled="true"
-        app:counterEnabled="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.569" />
+        app:layout_constraintVertical_bias="0.569">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSignPass"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:hint="Password:"
+            android:inputType="textPassword" />
 
-    <EditText
-        android:id="@+id/etConfirmPassword"
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilConfirmPassword"
         android:layout_width="329dp"
         android:layout_height="48dp"
-        android:ems="10"
-        android:hint="Confirm Password:"
-        android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.639" />
+        app:layout_constraintVertical_bias="0.639"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:hint="Confirm Password:"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btSignRegister"

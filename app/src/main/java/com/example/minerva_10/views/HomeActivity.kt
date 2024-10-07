@@ -6,6 +6,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.minerva_10.fragments.HomeFragment
 import com.example.minerva_10.R
 import com.example.minerva_10.fragments.FavoriteFragment
+import com.example.minerva_10.fragments.SettingsFragment
 
 class HomeActivity : AppCompatActivity() {
 
@@ -42,6 +43,13 @@ class HomeActivity : AppCompatActivity() {
                     favoriteFragment.arguments = bundle
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, favoriteFragment)
+                        .addToBackStack(null)
+                        .commit()
+                    true
+                }
+                R.id.settings -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, SettingsFragment())
                         .addToBackStack(null)
                         .commit()
                     true

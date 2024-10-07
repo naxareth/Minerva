@@ -28,12 +28,10 @@ interface ApiInterface {
     fun register(@Body registerRequest: RegisterRequest): Call<RegisterResponse>
 
     @POST("logout")
-    @Headers("Authorization: Bearer {token}")
-    fun logout(@Path("token") token: String): Call<LogoutResponse>
+    fun logout(@Header("Authorization") token: String): Call<LogoutResponse>
 
     @GET("profile")
-    @Headers("Authorization: Bearer {token}")
-    fun profile(@Path("token") token: String): Call<ProfileResponse>
+    fun profile(@Header("Authorization") token: String): Call<ProfileResponse>
 
     // Favorites Endpoints
     @GET("favorites")

@@ -20,16 +20,13 @@
             android:name=".views.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".views.FavoriteActivity"
-            android:exported="false" />
-        <activity
             android:name=".views.SignUpActivity"
             android:exported="false" />
         <activity
             android:name=".views.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".views.MainActivity"
+            android:name=".views.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
