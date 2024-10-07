@@ -1,10 +1,11 @@
-package com.example.minerva_10
+package com.example.minerva_10.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.minerva_10.R
 
 class BlankFragment : Fragment() {
 

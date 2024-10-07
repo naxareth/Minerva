@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.minerva_10.fragments.BlankFragment
 import com.example.minerva_10.R
 import com.example.minerva_10.api.responses.Item
 
