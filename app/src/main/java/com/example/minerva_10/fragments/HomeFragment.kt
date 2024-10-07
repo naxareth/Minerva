@@ -50,7 +50,7 @@ class HomeFragment : Fragment() {
                 )
 
                 // Set the adapter for the RecyclerView with both categories
-                parentRecyclerView.adapter = ParentAdapter(categories)
+                parentRecyclerView.adapter = ParentAdapter(categories, requireActivity())
 
             } catch (e: Exception) {
                 // Handle the error

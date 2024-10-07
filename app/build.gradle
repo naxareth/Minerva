@@ -45,6 +45,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'androidx.annotation:annotation:1.8.2'
     implementation 'androidx.activity:activity:1.9.2'
 
     // ExoPlayer + HLS + UI + MediaSession
@@ -72,6 +74,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
 
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    kapt 'com.github.bumptech.glide:compiler:4.15.1' // Add if using Kotlin and want to generate API for Glide
+
     // Room components
     def roomVersion = '2.6.0'
     implementation "androidx.room:room-ktx:$roomVersion"
@@ -98,5 +103,24 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     implementation 'io.coil-kt:coil:2.2.2'
 
+    // Room components
+    def room_version = "2.5.2" // Replace with the latest version if available
 
+    // Room runtime
+    implementation "androidx.room:room-runtime:$room_version"
+
+    // Room KTX for Kotlin support
+    implementation "androidx.room:room-ktx:$room_version"
+
+    // Annotation processor for Room (for Java)
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    // For Kotlin use kapt instead of annotationProcessor
+    kapt "androidx.room:room-compiler:$room_version"
+
+
+}
+// Enable Room to use annotation processing
+kapt {
+    correctErrorTypes = true
 }
