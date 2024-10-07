@@ -1,3 +1,4 @@
+// RecyclerViewFragment.kt
 package com.example.minerva_10
 
 import android.os.Bundle
@@ -45,7 +46,7 @@ class RecyclerViewFragment : Fragment() {
                 )
 
                 // Set the adapter for the RecyclerView with both categories
-                parentRecyclerView.adapter = ParentAdapter(categories)
+                parentRecyclerView.adapter = ParentAdapter(categories, requireActivity())
 
             } catch (e: Exception) {
                 // Handle the error
@@ -53,6 +54,7 @@ class RecyclerViewFragment : Fragment() {
         }
     }
 }
+
 
 
 
