@@ -1,12 +1,13 @@
-package com.example.minerva_10
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.minerva_10.Category
+import com.example.minerva_10.R
+import com.example.minerva_10.SubAdapter
 
 class ParentAdapter(private val categories: List<Category>, private val activity: FragmentActivity) :
     RecyclerView.Adapter<ParentAdapter.CategoryWithItemsViewHolder>() {
@@ -32,12 +33,15 @@ class ParentAdapter(private val categories: List<Category>, private val activity
             // Set the category title
             title.text = category.title
 
-            // Set up the horizontal RecyclerView for the items in this category
-            subRecyclerView.layoutManager =
-                LinearLayoutManager(subRecyclerView.context, LinearLayoutManager.HORIZONTAL, false)
+            // Set up the GridLayoutManager with 5 columns for the items in this category
+            subRecyclerView.layoutManager = GridLayoutManager(subRecyclerView.context, 3) // 5 columns
             subRecyclerView.adapter = SubAdapter(category.items, activity)
+            subRecyclerView.addItemDecoration(GridSpacingItemDecoration(3, 16))  // 5 columns, 16dp spacing
+
         }
     }
 }
+
+
 
 
