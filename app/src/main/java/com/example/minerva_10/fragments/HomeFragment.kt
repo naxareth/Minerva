@@ -1,5 +1,6 @@
 package com.example.minerva_10.fragments
 
+import ParentAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

@@ -1,16 +1,18 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="140dp"
+    android:layout_width="130dp"
     android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
     android:orientation="vertical">
 
     <!-- ImageView to show the item's image -->
     <ImageView
         android:id="@+id/itemImage"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:scaleType="centerCrop" />
+        android:layout_height="160dp"
+        android:scaleType="centerCrop"
+        android:padding="16dp"/>
 
     <!-- TextView to show the title of each item below the image -->
     <TextView
