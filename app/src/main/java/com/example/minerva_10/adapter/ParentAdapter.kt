@@ -5,9 +5,9 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.minerva_10.Category
 import com.example.minerva_10.R
-import com.example.minerva_10.SubAdapter
+import com.example.minerva_10.adapter.SubAdapter
+import com.example.minerva_10.api.responses.Category
 
 class ParentAdapter(private val categories: List<Category>, private val activity: FragmentActivity) :
     RecyclerView.Adapter<ParentAdapter.CategoryWithItemsViewHolder>() {
