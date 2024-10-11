@@ -1,6 +1,5 @@
 package com.example.minerva_10.adapter
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,17 +39,10 @@ class SubAdapter(private val items: List<Item>, private val activity: FragmentAc
 
             // Set an onClickListener for the ImageView
             imageView.setOnClickListener {
-                // Create an instance of AnimeInfoFragment
-                val animeInfoFragment = AnimeInfoFragment().apply {
-                    // Pass the anime ID to the fragment arguments
-                    arguments = Bundle().apply {
-                        putString("animeId", item.id)  // Assuming `item.id` contains the anime ID
-                    }
-                }
-                // Replace the current fragment with AnimeInfoFragment
+                // Replace the current fragment with BlankFragment
                 val fragmentManager: FragmentManager = activity.supportFragmentManager
                 val fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragment_container, animeInfoFragment)
+                fragmentTransaction.replace(R.id.fragment_container, AnimeInfoFragment())
                 fragmentTransaction.addToBackStack(null)  // Allows the user to go back
                 fragmentTransaction.commit()
             }

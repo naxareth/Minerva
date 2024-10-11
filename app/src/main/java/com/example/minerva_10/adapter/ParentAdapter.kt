@@ -41,7 +41,3 @@ class ParentAdapter(private val categories: List<Category>, private val activity
         }
     }
 }
-
-
-
-
