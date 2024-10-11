@@ -1,5 +1,6 @@
 package com.example.minerva_10.adapter
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.minerva_10.fragments.BlankFragment
+import com.example.minerva_10.fragments.AnimeInfoFragment
 import com.example.minerva_10.R
 import com.example.minerva_10.api.responses.Item
 
@@ -39,18 +40,20 @@ class SubAdapter(private val items: List<Item>, private val activity: FragmentAc
 
             // Set an onClickListener for the ImageView
             imageView.setOnClickListener {
-                // Replace the current fragment with BlankFragment
+                // Create an instance of AnimeInfoFragment
+                val animeInfoFragment = AnimeInfoFragment().apply {
+                    // Pass the anime ID to the fragment arguments
+                    arguments = Bundle().apply {
+                        putString("animeId", item.id)  // Assuming `item.id` contains the anime ID
+                    }
+                }
+                // Replace the current fragment with AnimeInfoFragment
                 val fragmentManager: FragmentManager = activity.supportFragmentManager
                 val fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragment_container, BlankFragment())
+                fragmentTransaction.replace(R.id.fragment_container, animeInfoFragment)
                 fragmentTransaction.addToBackStack(null)  // Allows the user to go back
                 fragmentTransaction.commit()
             }
         }
     }
 }
-
-
-
-
-
