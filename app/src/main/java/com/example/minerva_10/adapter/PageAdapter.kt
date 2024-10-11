@@ -7,8 +7,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minerva_10.R
 
-class PageAdapter(private val totalPages: Int, private val onPageClick: (Int) -> Unit) :
-    RecyclerView.Adapter<PageAdapter.PageViewHolder>() {
+class PageAdapter(
+    private val totalPages: Int,
+    private val currentPage: Int,  // Add currentPage as a parameter
+    private val onPageClick: (Int) -> Unit
+) : RecyclerView.Adapter<PageAdapter.PageViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -17,7 +20,11 @@ class PageAdapter(private val totalPages: Int, private val onPageClick: (Int) ->
     }
 
     override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
-        holder.bind(position + 1) // Page numbers start from 1
+        val pageNumber = position + 1  // Page numbers start from 1
+        holder.bind(pageNumber)
+
+        // Set current page as selected
+        holder.itemView.isSelected = pageNumber == currentPage
     }
 
     override fun getItemCount(): Int = totalPages
@@ -33,3 +40,4 @@ class PageAdapter(private val totalPages: Int, private val onPageClick: (Int) ->
         }
     }
 }
+

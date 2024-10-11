@@ -134,7 +134,7 @@ class HomeFragment : Fragment() {
                 }
 
                 // Set the PageAdapter to display page numbers
-                pageRecyclerView.adapter = PageAdapter(totalPages) { selectedPage ->
+                pageRecyclerView.adapter = PageAdapter(totalPages, currentPage) { selectedPage ->
                     loadPage(selectedPage) // Trigger page load on number click
                 }
 
