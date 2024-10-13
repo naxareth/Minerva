@@ -7,12 +7,15 @@
     android:orientation="vertical">
 
     <!-- ImageView to show the item's image -->
+
+
     <ImageView
         android:id="@+id/itemImage"
         android:layout_width="match_parent"
         android:layout_height="160dp"
         android:scaleType="centerCrop"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        />
 
     <!-- TextView to show the title of each item below the image -->
     <TextView
@@ -20,10 +23,12 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:text="Title"
-        android:textSize="10sp"
+        android:textStyle="bold"
+        android:textSize="16sp"
         android:textColor="#F6306B"
         android:gravity="center"
-        android:padding="4dp" />
+        android:padding="4dp"
+        />
 
 </LinearLayout>
 

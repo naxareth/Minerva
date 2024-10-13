@@ -119,6 +119,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
 
+
 }
 // Enable Room to use annotation processing
 kapt {

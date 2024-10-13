@@ -9,12 +9,15 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.minerva_10.fragments.BlankFragment
+import com.example.minerva_10.fragments.AnimeInfoFragment
 import com.example.minerva_10.R
 import com.example.minerva_10.api.responses.Item
 
-class SubAdapter(private val items: List<Item>, private val activity: FragmentActivity) :
-    RecyclerView.Adapter<SubAdapter.ItemViewHolder>() {
+class SubAdapter(
+    private val items: List<Item>,
+    private val activity: FragmentActivity,
+    private val onItemClick: (Item) -> Unit
+) : RecyclerView.Adapter<SubAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -24,7 +27,7 @@ class SubAdapter(private val items: List<Item>, private val activity: FragmentAc
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = items[position]
-        holder.bind(item)
+        holder.bind(item, onItemClick)
     }
 
     override fun getItemCount(): Int = items.size
@@ -33,24 +36,14 @@ class SubAdapter(private val items: List<Item>, private val activity: FragmentAc
         private val title: TextView = view.findViewById(R.id.itemTitle)
         private val imageView: ImageView = view.findViewById(R.id.itemImage)
 
-        fun bind(item: Item) {
+        fun bind(item: Item, onItemClick: (Item) -> Unit) {
             title.text = item.title
             imageView.load(item.image)
 
             // Set an onClickListener for the ImageView
             imageView.setOnClickListener {
-                // Replace the current fragment with BlankFragment
-                val fragmentManager: FragmentManager = activity.supportFragmentManager
-                val fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragment_container, BlankFragment())
-                fragmentTransaction.addToBackStack(null)  // Allows the user to go back
-                fragmentTransaction.commit()
+                onItemClick(item)
             }
         }
     }
 }
-
-
-
-
-

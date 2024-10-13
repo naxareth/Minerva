@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.minerva_10.adapter.ParentAdapter
 import com.example.minerva_10.R
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.Category
@@ -46,21 +45,26 @@ class HomeFragment : Fragment() {
 
                 // Create categories for both
                 val categories = listOf(
-                    Category("Top Airing", topAiringAnimes.results.map { Item(it.title, it.image) }),
-                    Category("Recent Episodes", recentEpisodes.results.map { Item(it.title, it.image) })
+                    Category("Top Airing", topAiringAnimes.results.map { Item(it.title, it.image, it.id) }),
+                    Category("Recent Episodes", recentEpisodes.results.map { Item(it.title, it.image, it.id) })
                 )
 
-                // Set the adapter for the RecyclerView with both categories
-                parentRecyclerView.adapter = ParentAdapter(categories, requireActivity())
+                // Set the adapter for the RecyclerView
+                parentRecyclerView.adapter = ParentAdapter(categories, requireActivity()) { item ->
+                    // Create a bundle to pass the anime item
+                    val bundle = Bundle()
+                    bundle.putString("anime_id", item.id) // Pass the item's ID
+
+                    // Navigate to the AnimeInfoFragment
+                    val animeInfoFragment = AnimeInfoFragment()
+                    animeInfoFragment.arguments = bundle
+                    fragmentManager?.beginTransaction()?.replace(R.id.fragment_container, animeInfoFragment)?.commit()
+                }
 
             } catch (e: Exception) {
                 // Handle the error
+                e.printStackTrace()
             }
         }
     }
 }
-
-
-
-
-

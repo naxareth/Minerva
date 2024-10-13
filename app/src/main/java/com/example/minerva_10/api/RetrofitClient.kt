@@ -26,4 +26,8 @@ object RetrofitClient {
             .build()
             .create(AnimeApiService::class.java)
     }
+    fun <T> createService(serviceClass: Class<T>): T {
+        return retrofit.create(serviceClass)
+    }
+
 }
