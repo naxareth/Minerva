@@ -25,7 +25,8 @@ data class LogoutRequest(
 data class LoginResponse(
     val message: String,
     val token_type: String,
-    val token: String
+    val token: String,
+    val userId: Int
 )
 
 data class RegisterResponse(
@@ -44,18 +45,16 @@ data class ProfileResponse(
 )
 
 data class Favorite(
-    val id: Int,
+    val id: String,
     val title: String,
     val image: String,
     val user_id: Int,
-    val created_at: String
 )
 
 data class FavoriteResource(
     val `anime-id`: Int,
     val title: String,
     val image: String,
-    val created_at: String,
     val user_id: Int
 )
 

@@ -38,8 +38,7 @@ interface ApiInterface {
     fun getFavorites(@Header("Authorization") token: String): Call<FavoriteResponse>
 
     @POST("favorites")
-    @Headers("Authorization: Bearer {token}")
-    fun createFavorite(@Path("token") token: String, @Body favorite:  Favorite): Call<FavoriteResource>
+    fun createFavorite(@Header("Authorization") token: String, @Body favorite:  Favorite): Call<FavoriteResource>
 
     @GET("favorites/{id}")
     @Headers("Authorization: Bearer {token}")
