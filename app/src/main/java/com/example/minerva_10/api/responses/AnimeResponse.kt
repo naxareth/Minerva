@@ -1,5 +1,8 @@
 package com.example.minerva_10.api.responses
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
 data class AnimeResponse(
     val results: List<Result>
 )
@@ -9,7 +12,7 @@ data class Result(
     val image: String,
     val id: String
 )
-
+@Parcelize
 data class AnimeInfo(
     val id: String,
     val title: String,
@@ -24,5 +27,5 @@ data class AnimeInfo(
     val otherName: String? = null,
     val totalEpisodes: Int,
     val episodes: List<EpisodeInfo>
-)
+) : Parcelable
 

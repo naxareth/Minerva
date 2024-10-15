@@ -6,19 +6,19 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minerva_10.R
-import com.example.minerva_10.adapter.SubAdapter
+import com.example.minerva_10.adapter.AnimeAdapter
 import com.example.minerva_10.api.responses.Category
 import com.example.minerva_10.api.responses.Item
 
-class ParentAdapter(
+class AnimeParentAdapter(
     private val categories: List<Category>,
     private val activity: FragmentActivity,
     private val onItemClick: (Item) -> Unit
-) : RecyclerView.Adapter<ParentAdapter.CategoryWithItemsViewHolder>() {
+) : RecyclerView.Adapter<AnimeParentAdapter.CategoryWithItemsViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryWithItemsViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_sub_recycler_view, parent, false)
+            .inflate(R.layout.item_anime_recycler_view, parent, false)
         return CategoryWithItemsViewHolder(view)
     }
 
@@ -39,7 +39,7 @@ class ParentAdapter(
 
             // Set up the GridLayoutManager with 5 columns for the items in this category
             subRecyclerView.layoutManager = GridLayoutManager(subRecyclerView.context, 3) // 5 columns
-            subRecyclerView.adapter = SubAdapter(category.items, activity, onItemClick)
+            subRecyclerView.adapter = AnimeAdapter(category.items, activity, onItemClick)
             subRecyclerView.addItemDecoration(GridSpacingItemDecoration(3, 16))  // 5 columns, 16dp spacing
 
         }

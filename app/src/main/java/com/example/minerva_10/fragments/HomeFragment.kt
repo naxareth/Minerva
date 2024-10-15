@@ -1,6 +1,6 @@
 package com.example.minerva_10.fragments
 
-import ParentAdapter
+import AnimeParentAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -45,12 +45,12 @@ class HomeFragment : Fragment() {
 
                 // Create categories for both
                 val categories = listOf(
-                    Category("Top Airing", topAiringAnimes.results.map { Item(it.title, it.image, it.id) }),
-                    Category("Recent Episodes", recentEpisodes.results.map { Item(it.title, it.image, it.id) })
+                    Category("TOP AIRING", topAiringAnimes.results.map { Item(it.title, it.image, it.id) }),
+                    Category("RECENT EPISODES", recentEpisodes.results.map { Item(it.title, it.image, it.id) })
                 )
 
                 // Set the adapter for the RecyclerView
-                parentRecyclerView.adapter = ParentAdapter(categories, requireActivity()) { item ->
+                parentRecyclerView.adapter = AnimeParentAdapter(categories, requireActivity()) { item ->
                     // Create a bundle to pass the anime item
                     val bundle = Bundle()
                     bundle.putString("anime_id", item.id) // Pass the item's ID

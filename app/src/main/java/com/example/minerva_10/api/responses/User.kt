@@ -45,14 +45,14 @@ data class ProfileResponse(
 )
 
 data class Favorite(
-    val id: String,
+    val id: String = "",
     val title: String,
     val image: String,
     val user_id: Int,
 )
 
 data class FavoriteResource(
-    val `anime-id`: Int,
+    val `id`: String,
     val title: String,
     val image: String,
     val user_id: Int

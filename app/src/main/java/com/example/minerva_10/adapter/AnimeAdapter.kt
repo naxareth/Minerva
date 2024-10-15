@@ -6,18 +6,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.minerva_10.fragments.AnimeInfoFragment
 import com.example.minerva_10.R
 import com.example.minerva_10.api.responses.Item
 
-class SubAdapter(
+class AnimeAdapter(
     private val items: List<Item>,
     private val activity: FragmentActivity,
     private val onItemClick: (Item) -> Unit
-) : RecyclerView.Adapter<SubAdapter.ItemViewHolder>() {
+) : RecyclerView.Adapter<AnimeAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context)

@@ -87,7 +87,7 @@ class AnimeInfoFragment : Fragment() {
                     val favoriteResponse = response.body()
                     val favoriteResources = favoriteResponse?.data ?: emptyList()
 
-                    val isFavorite = favoriteResources.any { it.`anime-id` == animeId.toInt() }
+                    val isFavorite = favoriteResources.any { it.`id` == animeId }
 
                     binding.addToFavoritesButton.isChecked = isFavorite
                 } else {
@@ -105,36 +105,55 @@ class AnimeInfoFragment : Fragment() {
         val sharedPreferences = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
         val token = sharedPreferences?.getString("token", "") ?: ""
 
-        val favorite = Favorite(
-            id = "",
-            title = binding.animeTitle.text.toString(),
-            image = binding.animeImage.toString(),
-            user_id = 0
-        )
+        // Fetch the anime API ID
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val animeInfo: AnimeInfo = animeApiService.getAnimeInfo(animeId)
+                val animeApiId = animeInfo.id // Fetch the ID from the anime API
 
-        RetrofitClient.api.createFavorite("Bearer $token", favorite).enqueue(object : Callback<FavoriteResource> {
-            override fun onResponse(call: Call<FavoriteResource>, response: Response<FavoriteResource>) {
-                if (response.isSuccessful) {
-                    val favoriteResource = response.body()
-                    if (favoriteResource != null) {
-                        Log.d("Favorite", "Favorite created with anime-id: ${favoriteResource.`anime-id`}")
-                        Log.d("Favorite", "Favorite created with title: ${favoriteResource.title}")
-                        Log.d("Favorite", "Favorite created with image: ${favoriteResource.image}")
-                        Log.d("Favorite", "Favorite created with user_id: ${favoriteResource.user_id}")
-                    }
-                } else {
-                    Log.e("Favorite", "Error adding anime to favorites: ${response.code()}")
-                    val errorBody = response.errorBody()
-                    if (errorBody != null) {
-                        Log.e("Favorite", "Error body: ${errorBody.string()}")
-                    }
+                // Log the image URL to check if it's fetched successfully
+                Log.d("Favorite", "Fetched anime image URL: ${animeInfo.image}")
+
+                withContext(Dispatchers.Main) {
+                    // Create a new Favorite instance with the actual anime API ID
+                    val favorite = Favorite(
+                        id = animeApiId, // Use the actual anime API ID
+                        title = binding.animeTitle.text.toString(),
+                        image = animeInfo.image, // Use the fetched image URL
+                        user_id = 0
+                    )
+
+                    // Add the favorite to the database
+                    RetrofitClient.api.createFavorite("Bearer $token", favorite).enqueue(object : Callback<FavoriteResource> {
+                        override fun onResponse(call: Call<FavoriteResource>, response: Response<FavoriteResource>) {
+                            if (response.isSuccessful) {
+                                val favoriteResource = response.body()
+                                if (favoriteResource != null) {
+                                    Log.d("Favorite", "Favorite created with anime-id: ${favoriteResource.`id`}")
+                                    Log.d("Favorite", "Favorite created with title: ${favoriteResource.title}")
+                                    Log.d("Favorite", "Favorite created with image: ${favoriteResource.image}")
+                                    Log.d("Favorite", "Favorite created with user_id: ${favoriteResource.user_id}")
+                                }
+                            } else {
+                                Log.e("Favorite", "Error adding anime to favorites: ${response.code()}")
+                                val errorBody = response.errorBody()
+                                if (errorBody != null) {
+                                    Log.e("Favorite", "Error body: ${errorBody.string()}")
+                                }
+                            }
+                        }
+
+                        override fun onFailure(call: Call<FavoriteResource>, t: Throwable) {
+                            Log.e("Favorite", "Error adding anime to favorites: $t")
+                        }
+                    })
                 }
+            } catch (e: IOException) {
+                Log.e("Fetch Data", "Error fetching anime information: $e")
+            } catch (e: HttpException) {
+                Log.e("Fetch Data", "Error fetching anime information: $e")
             }
-
-            override fun onFailure(call: Call<FavoriteResource>, t: Throwable) {
-                Log.e("Favorite", "Error adding anime to favorites: $t")
-            }
-        })
+        }
     }
     private fun removeAnimeFromFavorites(animeId: String) {
         val sharedPreferences = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
