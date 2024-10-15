@@ -38,7 +38,10 @@ interface ApiInterface {
     fun getFavorites(@Header("Authorization") token: String): Call<FavoriteResponse>
 
     @POST("favorites")
-    fun createFavorite(@Header("Authorization") token: String, @Body favorite:  Favorite): Call<FavoriteResource>
+    fun createFavorite(
+        @Header("Authorization") token: String,
+        @Body favorite: Favorite
+    ): Call<FavoriteResource>
 
     @GET("favorites/{id}")
     @Headers("Authorization: Bearer {token}")
@@ -46,9 +49,12 @@ interface ApiInterface {
 
     @PUT("favorites/{id}")
     @Headers("Authorization: Bearer {token}")
-    fun updateFavorite(@Path("token") token: String, @Path("id") id: Int, @Body favorite: Favorite): Call<FavoriteResource>
+    fun updateFavorite(
+        @Path("token") token: String,
+        @Path("id") id: Int,
+        @Body favorite: Favorite
+    ): Call<FavoriteResource>
 
     @DELETE("favorites/{id}")
-    @Headers("Authorization: Bearer {token}")
-    fun deleteFavorite(@Path("token") token: String, @Path("id") id: Int): Call<Void>
+    fun deleteFavorite(@Header("Authorization") token: String, @Path("id") id: String): Call<Void>
 }

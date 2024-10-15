@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -63,6 +64,7 @@ class AnimeInfoFragment : Fragment() {
         // Fetch anime information
         fetchAnimeInfo(animeId)
 
+        // Set up the toggle button listener
         binding.addToFavoritesButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 // Anime is being added to favorites
@@ -73,6 +75,7 @@ class AnimeInfoFragment : Fragment() {
             }
         }
 
+        // Check if the anime is already a favorite
         checkIfAnimeIsFavorite()
     }
 
@@ -159,21 +162,32 @@ class AnimeInfoFragment : Fragment() {
         val sharedPreferences = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
         val token = sharedPreferences?.getString("token", "") ?: ""
 
-        RetrofitClient.api.deleteFavorite(token, animeId.toInt()).enqueue(object : Callback<Void> {
+        // Call the API to remove the favorite
+        RetrofitClient.api.deleteFavorite("Bearer $token", animeId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     // Anime removed from favorites successfully
+                    Log.d("Favorite", "Anime removed from favorites successfully")
                 } else {
                     // Handle error
+                    Log.e("Favorite", "Error removing anime from favorites: ${response.code()}")
+                    val errorBody = response.errorBody()
+                    if (errorBody != null) {
+                        Log.e("Favorite", "Error body: ${errorBody.string()}")
+                    }
+                    // Show error message to the user
+                    Toast.makeText(context, "Error removing anime from favorites", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 // Handle error
+                Log.e("Favorite", "Error removing anime from favorites: $t")
+                // Show error message to the user
+                Toast.makeText(context, "Error removing anime from favorites", Toast.LENGTH_SHORT).show()
             }
         })
     }
-
 
     private fun fetchAnimeInfo(animeId: String) {
         CoroutineScope(Dispatchers.IO).launch {
