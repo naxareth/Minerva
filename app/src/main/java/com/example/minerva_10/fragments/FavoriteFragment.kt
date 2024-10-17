@@ -31,7 +31,7 @@ class FavoriteFragment : Fragment() {
         adapter = FavoriteParentAdapter(emptyList(), requireActivity()) { favoriteResource ->
             // Create a bundle to pass the anime item
             val bundle = Bundle()
-            bundle.putString("anime_id", favoriteResource.id) // Pass the item's ID
+            bundle.putString("anime_id", favoriteResource.anime_id) // Pass the item's ID
 
             // Navigate to the AnimeInfoFragment
             val animeInfoFragment = AnimeInfoFragment()
