@@ -40,7 +40,7 @@ class AnimeParentAdapter(
             // Set up the GridLayoutManager with 5 columns for the items in this category
             subRecyclerView.layoutManager = GridLayoutManager(subRecyclerView.context, 3) // 5 columns
             subRecyclerView.adapter = AnimeAdapter(category.items, activity, onItemClick)
-            subRecyclerView.addItemDecoration(GridSpacingItemDecoration(3, 16))  // 5 columns, 16dp spacing
+            subRecyclerView.addItemDecoration(GridSpacingItemDecoration(3, 10))  // 5 columns, 16dp spacing
 
         }
     }

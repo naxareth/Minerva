@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -9,6 +10,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ANIME DETAILS"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
+            />
+
         <!-- Anime information container -->
         <LinearLayout
             android:id="@+id/anime_info_container"
@@ -16,20 +27,49 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Anime title -->
-            <TextView
-                android:id="@+id/anime_title"
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content">
 
             <!-- Anime image -->
             <ImageView
                 android:id="@+id/anime_image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:alpha="0.5"
+                />
+
+                <ImageView
+                    android:id="@+id/ivImage"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="10dp"
+                    android:padding="16dp"
+                    android:scaleType="centerCrop" />
+
+            </FrameLayout>
+            <!--
+            <Button
+                android:id="@+id/play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/arrow_right"
+                android:text="Play"
+                android:background="@color/transparent"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"/> -->
+
+            <TextView
+                android:id="@+id/anime_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:textColor="#F6306B"/>
 
             <!-- Anime URL
             <TextView
@@ -45,12 +85,14 @@
                 android:layout_height="wrap_content"
                 android:text="Release Date:"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"/>
             <TextView
                 android:id="@+id/anime_release_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textColor="#F6306B"/>
 
             <!-- Anime Description -->
             <TextView
@@ -59,12 +101,14 @@
                 android:layout_height="wrap_content"
                 android:text="Description:"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"/>
             <TextView
                 android:id="@+id/anime_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textColor="#F6306B"/>
 
             <!-- Anime Genres -->
             <TextView
@@ -73,14 +117,16 @@
                 android:layout_height="wrap_content"
                 android:text="Genres:"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"/>
             <TextView
                 android:id="@+id/anime_genres"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textColor="#F6306B"/>
 
-            <!-- Anime Sub or Dub -->
+            <!-- Anime Sub or Dub
             <TextView
                 android:id="@+id/anime_sub_or_dub_label"
                 android:layout_width="wrap_content"
@@ -92,7 +138,8 @@
                 android:id="@+id/anime_sub_or_dub"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:layout_marginTop="20dp"/>-->
 
             <!-- Anime Type -->
             <TextView
@@ -101,12 +148,14 @@
                 android:layout_height="wrap_content"
                 android:text="Type:"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"/>
             <TextView
                 android:id="@+id/anime_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textColor="#F6306B"/>
 
             <!-- Anime Status -->
             <TextView
@@ -115,14 +164,16 @@
                 android:layout_height="wrap_content"
                 android:text="Status:"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"/>
             <TextView
                 android:id="@+id/anime_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textColor="#F6306B"/>
 
-            <!-- Anime Other Name -->
+            <!-- Anime Other Name
             <TextView
                 android:id="@+id/anime_other_name_label"
                 android:layout_width="wrap_content"
@@ -134,17 +185,30 @@
                 android:id="@+id/anime_other_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp" />
-
+                android:textSize="20sp" />-->
             <ToggleButton
                 android:id="@+id/add_to_favorites_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableTop="@drawable/favorite_icon_state_list"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:drawableLeft="@drawable/favorite_icon_state_list"
                 android:text="Add To Favorites"
-                android:textOff="Add To Favorites"
-                android:textOn="Added to Favorites" />
+                android:textOff=" + Add To Favorites"
+                android:textOn=" Added to Favorites"
+                android:background="@color/transparent"
+                android:layout_marginTop="10dp"
+                android:textColor="#F6306B"/>
+
+
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EPISODES:"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"/>
+
 
         <!-- Episode list container -->
         <androidx.recyclerview.widget.RecyclerView

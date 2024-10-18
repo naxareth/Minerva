@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.minerva_10.R
 import com.example.minerva_10.api.responses.EpisodeInfo
 
-class EpisodeAdapter(private var episodes: List<EpisodeInfo>) : RecyclerView.Adapter<EpisodeAdapter.EpisodeViewHolder>() {
+class EpisodeAdapter(private var episodes: List<EpisodeInfo>, private val onClick: (EpisodeInfo) -> Unit) : RecyclerView.Adapter<EpisodeAdapter.EpisodeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EpisodeViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.episode_info_layout, parent, false)
@@ -17,8 +17,11 @@ class EpisodeAdapter(private var episodes: List<EpisodeInfo>) : RecyclerView.Ada
 
     override fun onBindViewHolder(holder: EpisodeViewHolder, position: Int) {
         val episode = episodes[position]
-        holder.episodeNumberTextView.text = episode.number.toString()
-        holder.episodeUrlTextView.text = episode.url
+        // Update to show "Episode" followed by the episode number
+        holder.episodeNumberTextView.text = "Episode ${episode.number}"
+
+        // Set a click listener on the item to handle episode clicks
+        holder.itemView.setOnClickListener { onClick(episode) }
     }
 
     override fun getItemCount(): Int {
@@ -32,6 +35,6 @@ class EpisodeAdapter(private var episodes: List<EpisodeInfo>) : RecyclerView.Ada
 
     inner class EpisodeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val episodeNumberTextView: TextView = itemView.findViewById(R.id.episode_number)
-        val episodeUrlTextView: TextView = itemView.findViewById(R.id.episode_url)
+        // Remove the episode URL TextView as it's no longer needed
     }
 }
