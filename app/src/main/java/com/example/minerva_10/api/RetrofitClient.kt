@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://192.168.0.12:8000/api/"
+    private const val BASE_URL = "http://192.168.254.162:8000/api/"
     private const val ANIME_API_URL = "https://animetize-api.vercel.app/"
 
     private val retrofit: Retrofit by lazy {
@@ -23,6 +23,7 @@ object RetrofitClient {
     val animeApiService: AnimeApiService by lazy {
         retrofit.newBuilder()
             .baseUrl(ANIME_API_URL)
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AnimeApiService::class.java)
     }
