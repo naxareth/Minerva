@@ -12,14 +12,15 @@
         app:cardCornerRadius="8dp"
         android:layout_margin="10dp"
         android:elevation="10dp"
-        android:background="#F6306B">
+        android:backgroundTint="#F6306B">
         <TextView
             android:id="@+id/categoryTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Category"
+            android:text=" Category"
             android:textSize="22sp"
             android:textStyle="bold"
+            android:textColor="@color/white"
             android:layout_margin="10dp" />
     </androidx.cardview.widget.CardView>
 
