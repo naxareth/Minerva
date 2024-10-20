@@ -7,10 +7,13 @@ data class AnimeResponse(
     val results: List<Result>
 )
 
+
 data class Result(
-    val title: String,
+    val id: String,
     val image: String,
-    val id: String
+    val releaseDate: String,
+    val subOrDub: String,
+    val title: String
 )
 @Parcelize
 data class AnimeInfo(

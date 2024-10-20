@@ -3,6 +3,8 @@ package com.example.minerva_10.api.interfaces
 import com.example.minerva_10.api.responses.AnimeInfo
 import com.example.minerva_10.api.responses.AnimeResponse
 import com.example.minerva_10.api.responses.EpisodeInfo
+import com.example.minerva_10.api.responses.Search
+import retrofit2.Call
 import com.example.minerva_10.api.responses.PaginatedResponse
 import com.example.minerva_10.api.responses.Server
 import com.example.minerva_10.api.responses.StreamingResponse
@@ -22,6 +24,11 @@ interface AnimeApiService {
 
     @GET("info/{id}/episodes")
     suspend fun getAnimeEpisodes(@Path("id") id: String): List<EpisodeInfo>
+
+    @GET("search")  // Replace with the correct endpoint
+    fun searchAnime(
+        @Query("query") query: String
+    ): Call<Search>
 
     @GET("servers/{episodeId}")
     suspend fun getServers(@Path("episodeId") episodeId: String): List<Server>
