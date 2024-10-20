@@ -207,7 +207,6 @@ class AnimeInfoFragment : Fragment() {
 
         // Update the anime genres
         binding.animeGenres.text = animeInfo.genres.joinToString(", ")
-        binding.animeGenresLabel.text = "Genres:"
 
         // Update the anime sub or dub
         //binding.animeSubOrDub.text = animeInfo.subOrDub

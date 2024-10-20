@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/main"
     tools:context=".views.SignUpActivity"
+    android:background="#F8F8F8"
     android:orientation="vertical">
 
 
