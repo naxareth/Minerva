@@ -29,6 +29,7 @@
         android:gravity="center"
         android:padding="6dp"
         android:text="Title"
+        android:fontFamily="@font/bebas"
         android:textColor="#F6306B"
         android:textSize="16sp"
         android:textStyle="bold" />

@@ -15,6 +15,7 @@
         android:layout_width="236dp"
         android:layout_height="64dp"
         android:text="MINERVA"
+        android:fontFamily="@font/bebas"
         android:textAlignment="center"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -24,23 +25,25 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.139" />
 
+
     <TextView
         android:id="@+id/tvDesc"
         android:layout_width="217dp"
         android:layout_height="22dp"
+        android:fontFamily="@font/oswald"
         android:text="Enjoy the  world of entertainment"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintHorizontal_bias="0.618"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.238" />
-
+        app:layout_constraintVertical_bias="0.221" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilName"
         android:layout_width="329dp"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/oswald"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
@@ -54,6 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
+            android:fontFamily="@font/oswald"
             android:background="@color/transparent"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -68,12 +72,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.404"
-        android:hint="Email:">
+        android:hint="Email:"
+        android:fontFamily="@font/oswald">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/oswald"
             android:inputType="textEmailAddress"
             android:background="@color/transparent"/>
 
@@ -81,6 +87,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilPassword"
+        android:fontFamily="@font/oswald"
         android:layout_width="329dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -97,6 +104,7 @@
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/oswald"
             android:inputType="textPassword"
             android:background="@color/transparent"/>
 
@@ -108,6 +116,7 @@
         android:layout_width="150dp"
         android:layout_height="48dp"
         android:text="Login"
+        android:fontFamily="@font/bebas"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -119,23 +128,24 @@
         android:id="@+id/btSignUpNow"
         android:layout_width="150dp"
         android:layout_height="48dp"
+        android:fontFamily="@font/bebas"
         android:text="Sign Up Now"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.844" />
+        app:layout_constraintVertical_bias="0.833" />
 
     <TextView
         android:id="@+id/tvNewToMinerva"
         android:layout_width="109dp"
         android:layout_height="27dp"
+        android:fontFamily="@font/oswald"
         android:text="New to Minerva?"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.771" />
+        app:layout_constraintVertical_bias="0.744" />
 </androidx.constraintlayout.widget.ConstraintLayout>
