@@ -13,7 +13,8 @@ data class EpisodeInfo(
 @Parcelize
 data class StreamingResponse(
     val headers: Headers,
-    val sources: List<Source>
+    val sources: List<Source>,
+    val download: String // No longer working
 ) : Parcelable
 
 @Parcelize

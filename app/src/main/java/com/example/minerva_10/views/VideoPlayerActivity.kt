@@ -1,6 +1,5 @@
 package com.example.minerva_10.views
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -22,8 +21,14 @@ import com.example.minerva_10.viewmodels.VideoPlayerViewModel
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import retrofit2.HttpException
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class VideoPlayerActivity : AppCompatActivity() {
 
@@ -34,6 +39,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     private lateinit var apiService: AnimeApiService
     private val viewModel: VideoPlayerViewModel by viewModels()
     private var availableQualities: List<String> = emptyList() // To hold available qualities
+    private lateinit var downloadButton: Button // Declare the download button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +48,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         playerView = findViewById(R.id.player_view)
         animeTitleTextView = findViewById(R.id.anime_title)
         qualitySpinner = findViewById(R.id.quality_spinner)
+        downloadButton = findViewById(R.id.download_button) // Initialize the download button
 
         // Retrieve the AnimeInfo object from the intent
         val animeInfo = intent.getParcelableExtra<AnimeInfo>("ANIME_INFO")
@@ -63,17 +70,19 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         // Set controller visibility listener
         playerView.setControllerVisibilityListener { visibility ->
-            if (visibility == View.VISIBLE) {
-                qualitySpinner.visibility = View.VISIBLE
-                findViewById<Button>(R.id.download_button).visibility = View.VISIBLE
-            } else {
-                qualitySpinner.visibility = View.GONE
-                findViewById<Button>(R.id.download_button).visibility = View.GONE
-            }
+            qualitySpinner.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
+            downloadButton.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
         }
 
         // Fetch streaming links to set up the quality spinner
         fetchStreamingLinks(episodeInfo.id)
+
+        // Set up download button click listener
+        downloadButton.setOnClickListener {
+            val selectedQuality = availableQualities[qualitySpinner.selectedItemPosition]
+            val filePath = "${externalCacheDir?.absolutePath}/${episodeInfo.number}.mp4" // Customize the file name as needed
+            fetchM3U8AndDownload(episodeInfo.id, selectedQuality, filePath) // Call the new method to handle m3u8 download
+        }
     }
 
     private fun fetchStreamingLinks(episodeId: String) {
@@ -92,7 +101,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 val defaultQuality = availableQualities.firstOrNull() ?: "360p" // Fallback to 360p if no qualities are available
                 fetchAndPlayVideo(episodeId, defaultQuality)
             } catch (e: HttpException) {
-                Log.e("VideoPlayerActivity", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
+                Log.e(" VideoPlayerActivity ", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
             } catch (e: Exception) {
                 Log.e("VideoPlayerActivity", "Error fetching streaming links: $e")
             }
@@ -150,6 +159,109 @@ class VideoPlayerActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e("VideoPlayerActivity", "Error fetching streaming links: $e")
             }
+        }
+    }
+
+    private fun fetchM3U8AndDownload(episodeId: String, quality: String, filePath: String) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    val serverName = "gogocdn"
+                    Log.d("VideoPlayerActivity", "Fetching streaming links for Episode ID: $episodeId, Server: $serverName, Quality: $quality")
+                    val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
+
+                    // Find the source with the selected quality
+                    val selectedSource = streamingResponse.sources.find { it.quality == quality }
+                    if (selectedSource != null) {
+                        val m3u8Url = selectedSource.url
+                        Log.d("VideoPlayerActivity", "Fetching m3u8 from URL: $m3u8Url")
+
+                        // Fetch the m3u8 file
+                        val client = OkHttpClient()
+                        val request = Request.Builder().url(m3u8Url).build()
+
+                        client.newCall(request).execute().use { response ->
+                            if (!response.isSuccessful) {
+                                Log.e("VideoPlayerActivity", "Error fetching m3u8 file: ${response.code}")
+                                return@withContext
+                            }
+                            val m3u8Content = response.body?.string() ?: return@withContext
+
+                            // Parse the m3u8 content to get segment URLs
+                            val baseUrl = m3u8Url.substringBeforeLast("/") // Extract base URL from m3u8 URL
+                            val segmentUrls = parseM3U8(m3u8Content, baseUrl)
+
+                            // Now download each segment
+                            downloadSegments(segmentUrls, filePath)
+                        }
+                    } else {
+                        Log.e("VideoPlayerActivity", "No source found for quality: $quality")
+                    }
+                } catch (e: HttpException) {
+                    Log.e("VideoPlayerActivity", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
+                } catch (e: Exception) {
+                    Log.e("VideoPlayerActivity", "Error fetching streaming links: $e")
+                }
+            }
+        }
+    }
+
+    private fun parseM3U8(m3u8Content: String, baseUrl: String): List<String> {
+        val segmentUrls = mutableListOf<String>()
+        val lines = m3u8Content.split("\n")
+        for (line in lines) {
+            if (line.endsWith(".ts")) { // Assuming the segments are in .ts format
+                val fullUrl = if (line.startsWith("http://") || line.startsWith("https://")) {
+                    line.trim()
+                } else {
+                    "$baseUrl/$line".trim() // Prepend base URL
+                }
+                segmentUrls.add(fullUrl)
+                Log.d("VideoPlayerActivity", "Parsed segment URL: $fullUrl")
+            }
+        }
+        return segmentUrls
+    }
+
+    private suspend fun downloadSegments(segmentUrls: List<String>, filePath: String) {
+        val outputFile = File(filePath)
+
+        // Configure OkHttpClient with timeouts
+        val client = OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS) // Set connection timeout
+            .readTimeout(30, TimeUnit.SECONDS)    // Set read timeout
+            .writeTimeout(30, TimeUnit.SECONDS)   // Set write timeout
+            .build()
+
+        FileOutputStream(outputFile).use { outputStream ->
+            for (url in segmentUrls) {
+                Log.d("VideoPlayerActivity", "Downloading segment: $url")
+                val request = Request.Builder().url(url).build()
+
+                try {
+                    client.newCall(request).execute().use { response ->
+                        if (!response.isSuccessful) {
+                            Log.e("VideoPlayerActivity", "Error downloading segment: ${response.code} for URL: $url")
+                        } else {
+                            response.body?.byteStream()?.use { input ->
+                                val buffer = ByteArray(1024)
+                                var bytesRead: Int
+                                while (input.read(buffer).also { bytesRead = it } != -1) {
+                                    outputStream.write(buffer, 0, bytesRead)
+                                }
+                            }
+                            Log.d("VideoPlayerActivity", "Finished downloading segment: $url")
+                        }
+                    }
+                } catch (e: IOException) {
+                    // Handle IOException specifically
+                    Log.e("VideoPlayerActivity", "IOException downloading segment: $url, Error: ${e.message}")
+                } catch (e: Exception) {
+                    // Handle any other exceptions that occur during the download
+                    Log.e("VideoPlayerActivity", "Exception downloading segment: $url, Error: ${e.message}")
+                }
+            }
+            Log.d("VideoPlayerActivity", "Download complete: $filePath")
         }
     }
 

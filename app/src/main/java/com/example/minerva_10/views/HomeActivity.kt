@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.minerva_10.fragments.HomeFragment
 import com.example.minerva_10.R
+import com.example.minerva_10.fragments.DownloadFragment
 import com.example.minerva_10.fragments.FavoriteFragment
 import com.example.minerva_10.fragments.SearchFragment
 import com.example.minerva_10.fragments.SettingsFragment
@@ -55,7 +56,7 @@ class HomeActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
-                R.id.settings -> {
+                R.id.downloads -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, SettingsFragment())
                         .addToBackStack(null)
