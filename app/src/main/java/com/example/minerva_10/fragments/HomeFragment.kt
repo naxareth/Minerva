@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,7 @@ import com.example.minerva_10.R
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.Category
 import com.example.minerva_10.api.responses.Item
+import com.example.minerva_10.views.SharedViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -28,6 +30,23 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
+        // Fetch anime data using coroutines as already done
+        lifecycleScope.launch {
+            try {
+                val topAiringAnimes = RetrofitClient.animeApiService.getTopAiringAnimes().results
+                val recentEpisodes = RetrofitClient.animeApiService.getRecentEpisodes().results
+
+                val allAnimes = topAiringAnimes + recentEpisodes
+
+                // Add all anime items to ViewModel
+                sharedViewModel.setAnimeList(allAnimes.map { Item(it.title, it.image, it.id) })
+                sharedViewModel.setTopAiringList(topAiringAnimes.map { Item(it.title, it.image, it.id) })
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
         val parentRecyclerView: RecyclerView = view.findViewById(R.id.parentRecyclerView)
         parentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -67,4 +86,4 @@ class HomeFragment : Fragment() {
             }
         }
     }
-}
+}}
