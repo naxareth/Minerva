@@ -91,28 +91,48 @@ class AnimeInfoFragment : Fragment() {
     }
 
     private fun addAnimeToFavorites(animeId: String) {
-        val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
+        val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE )
         val token = sharedPreferencesToken?.getString("token", "") ?: ""
+
+        // Retrieve the user ID from SharedPreferences
+        val userId = sharedPreferencesToken?.getInt("user_id", -1) ?: -1
+        Log.d("User  ID", "Retrieved user ID: $userId") // Log the retrieved user ID
+
+        // Check if the user ID is valid
+        if (userId <= 0) {
+            Log.e("Favorite", "Invalid user ID: $userId")
+            Toast.makeText(context, "You must be logged in to add favorites.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Log.d("Token", "Using token: $token")
+        Log.d("User  ID", "Using user ID: $userId") // Log the user ID
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // Fetch anime information
                 val animeInfo: AnimeInfo = animeApiService.getAnimeInfo(animeId)
                 val animeApiId = animeInfo.id
 
                 withContext(Dispatchers.Main) {
+                    // Create a Favorite object
                     val favorite = Favorite(
                         anime_id = animeApiId,
                         title = binding.animeTitle.text.toString(),
                         image = animeInfo.image,
-                        user_id = 0
+                        user_id = userId // Use the retrieved user ID
                     )
 
+                    Log.d("Favorite", "Adding favorite: $favorite")
+                    Log.d("Favorite Request", "Request Body: anime_id=${favorite.anime_id}, title=${favorite.title}, image=${favorite.image}, user_id=${favorite.user_id}")
+
+                    // Make the API call to add the favorite
                     RetrofitClient.api.createFavorite("Bearer $token", favorite).enqueue(object : Callback<FavoriteResource> {
                         override fun onResponse(call: Call<FavoriteResource>, response: Response<FavoriteResource>) {
                             if (response.isSuccessful) {
                                 Log.d("Favorite", "Added to favorites")
                             } else {
-                                Log.e("Favorite", "Error adding to favorites: ${response.code()}")
+                                Log.e("Favorite", "Error adding to favorites: ${response.code()} - ${response.message()}")
                             }
                         }
 
@@ -121,18 +141,18 @@ class AnimeInfoFragment : Fragment() {
                         }
                     })
                 }
-            } catch ( e: IOException) {
+            } catch (e: IOException) {
                 Log.e("Fetch Data", "Error fetching anime information: $e")
             } catch (e: HttpException) {
                 Log.e("Fetch Data", "Error fetching anime information: $e")
             }
         }
 
+        // Update the favorites in SharedPreferences
         val favoriteIds = sharedPreferences.getStringSet("favorite_ids", emptySet())
         val newFavoriteIds = favoriteIds?.toSet()?.plus(animeId) ?: setOf(animeId)
         sharedPreferences.edit().putStringSet("favorite_ids", newFavoriteIds).apply()
     }
-
     private fun removeAnimeFromFavorites(animeId: String) {
         val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
         val token = sharedPreferencesToken?.getString("token", "") ?: ""

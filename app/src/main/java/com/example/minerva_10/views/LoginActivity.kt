@@ -65,13 +65,15 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
                     val token = loginResponse?.token
+                    val userId = loginResponse?.userId // Ensure this is part of the response
                     val message = loginResponse?.message
 
-                    if (token != null && message != null) {
-                        // Store the token securely
+                    if (token != null && message != null && userId != null) {
+                        // Store the token and user ID securely
                         val sharedPreferences = getSharedPreferences("token_prefs", MODE_PRIVATE)
                         val editor = sharedPreferences.edit()
                         editor.putString("token", token)
+                        editor.putInt("user_id", userId) // Store user ID correctly
                         editor.apply()
 
                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
@@ -90,6 +92,8 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
+
+
 
     private fun handleErrorResponse(code: Int) {
         when (code) {
