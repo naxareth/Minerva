@@ -6,15 +6,17 @@
     android:padding="0dp">
 
     <!-- Add Category Title to the top of the layout -->
+
     <TextView
         android:id="@+id/Favorites"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Category"
-        android:textSize="22sp"
-        android:textStyle="bold"
         android:layout_marginTop="20dp"
-        android:paddingLeft="20dp" />
+        android:paddingLeft="20dp"
+        android:text="Category"
+        android:fontFamily="@font/bebas"
+        android:textSize="22sp"
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/gridView"

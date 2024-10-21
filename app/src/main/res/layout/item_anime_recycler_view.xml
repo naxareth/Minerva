@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Category"
+            android:fontFamily="@font/bebas"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="@color/white"
@@ -46,6 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Previous"
+            android:fontFamily="@font/bebas"
             android:background="@color/transparent"
             android:textColor="#F6306B"/>
 
@@ -55,6 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:fontFamily="@font/bebas"
             android:text="Page 1"
             android:textSize="17sp" />
 
@@ -63,6 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Next"
+            android:fontFamily="@font/bebas"
             android:background="@color/transparent"
             android:textColor="#F6306B"/>
     </LinearLayout>
