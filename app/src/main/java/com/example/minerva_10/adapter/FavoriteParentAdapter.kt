@@ -43,7 +43,7 @@ class FavoriteParentAdapter(
             gridView.adapter = FavoriteAdapter().apply {
                 submitList(favoriteResources, activity, onItemClick)
             }
-            gridView.addItemDecoration(GridSpacingItemDecoration(3, 16)) // Add item decoration
+            gridView.addItemDecoration(GridSpacingItemDecoration(3, 10)) // Add item decoration
         }
     }
 }

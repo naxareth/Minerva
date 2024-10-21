@@ -29,6 +29,6 @@ data class AnimeInfo(
     val status: String,
     val otherName: String? = null,
     val totalEpisodes: Int,
-    val episodes: List<EpisodeInfo>
+    val episodes: List<EpisodeInfo>,
 ) : Parcelable
 

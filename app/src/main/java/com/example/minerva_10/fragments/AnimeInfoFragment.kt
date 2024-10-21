@@ -1,6 +1,7 @@
 package com.example.minerva_10.fragments
 
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -15,10 +16,11 @@ import com.example.minerva_10.adapter.EpisodeAdapter
 import com.example.minerva_10.api.responses.AnimeInfo
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.interfaces.AnimeApiService
+import com.example.minerva_10.api.responses.EpisodeInfo
 import com.example.minerva_10.api.responses.Favorite
 import com.example.minerva_10.api.responses.FavoriteResource
-import com.example.minerva_10.api.responses.FavoriteResponse
 import com.example.minerva_10.databinding.FragmentAnimeinfoBinding
+import com.example.minerva_10.views.VideoPlayerActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,8 +37,8 @@ class AnimeInfoFragment : Fragment() {
     private lateinit var animeApiService: AnimeApiService
     private lateinit var episodeAdapter: EpisodeAdapter
     private var token: String? = null
-    private var userId: Int? = null
     private lateinit var sharedPreferences: SharedPreferences
+    private var animeId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,14 +47,17 @@ class AnimeInfoFragment : Fragment() {
         binding = FragmentAnimeinfoBinding.inflate(inflater, container, false)
         animeApiService = RetrofitClient.animeApiService
 
-        episodeAdapter = EpisodeAdapter(emptyList())
+        // Pass a click listener to the adapter
+        episodeAdapter = EpisodeAdapter(emptyList()) { episode ->
+            onEpisodeClicked(episode) // Handle the episode click
+        }
+
         binding.episodeList.layoutManager = LinearLayoutManager(context)
         binding.episodeList.adapter = episodeAdapter
         binding.episodeList.isNestedScrollingEnabled = true
 
         val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
         token = sharedPreferencesToken?.getString("token", null)
-        userId = sharedPreferencesToken?.getInt("user_id", 0)
 
         // Use the token to create a user-specific SharedPreferences for favorites
         sharedPreferences = context?.getSharedPreferences("favorites_prefs_${token ?: "default"}", MODE_PRIVATE) ?: return null
@@ -63,68 +68,71 @@ class AnimeInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        updateUserId()
-
-        val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
-        token = sharedPreferencesToken?.getString("token", null)
-        userId = sharedPreferencesToken?.getInt("user_id", 0)
-
-        // Use the token to create a user-specific SharedPreferences for favorites
-        sharedPreferences = context?.getSharedPreferences("favorites_prefs_${token ?: "default"}", MODE_PRIVATE) ?: return
-
-        val animeId = arguments?.getString("anime_id") ?: ""
-        fetchAnimeInfo(animeId)
+        // Retrieve the animeId from arguments
+        animeId = arguments?.getString("anime_id")
+        Log.d("AnimeInfoFragment", "Anime ID: $animeId") // Log the anime ID
+        fetchAnimeInfo(animeId ?: "")
 
         binding.addToFavoritesButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                addAnimeToFavorites(animeId)
+                addAnimeToFavorites(animeId ?: "")
             } else {
-                removeAnimeFromFavorites(animeId)
+                removeAnimeFromFavorites(animeId ?: "")
             }
         }
 
-        checkIfAnimeIsFavorite(animeId)
+        checkIfAnimeIsFavorite(animeId ?: "")
     }
 
     private fun checkIfAnimeIsFavorite(animeId: String) {
-        val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
-        val token = sharedPreferencesToken?.getString("token", null)
-        val userId = sharedPreferencesToken?.getInt("user_id", 0) ?: 0
-
-        val sharedPreferences = context?.getSharedPreferences("favorites_prefs_${token ?: "default"}", MODE_PRIVATE) ?: return
-
-        val favoriteIdsKey = "favorite_ids_$userId"
-        val favoriteIds = sharedPreferences.getStringSet(favoriteIdsKey, emptySet())
+        val favoriteIds = sharedPreferences.getStringSet("favorite_ids", emptySet())
         val isFavorite = favoriteIds?.contains(animeId) ?: false
         binding.addToFavoritesButton.isChecked = isFavorite
     }
 
     private fun addAnimeToFavorites(animeId: String) {
-        val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
-        token = sharedPreferencesToken?.getString("token", "") ?: return
-        userId = sharedPreferencesToken?.getInt("user_id", 0) ?: return
+        val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE )
+        val token = sharedPreferencesToken?.getString("token", "") ?: ""
 
-        val sharedPreferences = context?.getSharedPreferences("favorites_prefs_${token}", MODE_PRIVATE) ?: return
+        // Retrieve the user ID from SharedPreferences
+        val userId = sharedPreferencesToken?.getInt("user_id", -1) ?: -1
+        Log.d("User  ID", "Retrieved user ID: $userId") // Log the retrieved user ID
+
+        // Check if the user ID is valid
+        if (userId <= 0) {
+            Log.e("Favorite", "Invalid user ID: $userId")
+            Toast.makeText(context, "You must be logged in to add favorites.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Log.d("Token", "Using token: $token")
+        Log.d("User  ID", "Using user ID: $userId") // Log the user ID
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // Fetch anime information
                 val animeInfo: AnimeInfo = animeApiService.getAnimeInfo(animeId)
                 val animeApiId = animeInfo.id
 
                 withContext(Dispatchers.Main) {
+                    // Create a Favorite object
                     val favorite = Favorite(
-                        id = animeApiId,
+                        anime_id = animeApiId,
                         title = binding.animeTitle.text.toString(),
                         image = animeInfo.image,
-                        user_id = userId!!
+                        user_id = userId // Use the retrieved user ID
                     )
 
+                    Log.d("Favorite", "Adding favorite: $favorite")
+                    Log.d("Favorite Request", "Request Body: anime_id=${favorite.anime_id}, title=${favorite.title}, image=${favorite.image}, user_id=${favorite.user_id}")
+
+                    // Make the API call to add the favorite
                     RetrofitClient.api.createFavorite("Bearer $token", favorite).enqueue(object : Callback<FavoriteResource> {
                         override fun onResponse(call: Call<FavoriteResource>, response: Response<FavoriteResource>) {
                             if (response.isSuccessful) {
                                 Log.d("Favorite", "Added to favorites")
                             } else {
-                                Log.e("Favorite", "Error adding to favorites: ${response.code()}")
+                                Log.e("Favorite", "Error adding to favorites: ${response.code()} - ${response.message()}")
                             }
                         }
 
@@ -134,26 +142,20 @@ class AnimeInfoFragment : Fragment() {
                     })
                 }
             } catch (e: IOException) {
-                Log.e("Fetch Data", "Error fetching anime information: $ e")
+                Log.e("Fetch Data", "Error fetching anime information: $e")
             } catch (e: HttpException) {
                 Log.e("Fetch Data", "Error fetching anime information: $e")
             }
         }
 
-        // Store favorite IDs separately for each user based on user ID
-        val favoriteIdsKey = "favorite_ids_$userId"
-        val favoriteIds = sharedPreferences.getStringSet(favoriteIdsKey, emptySet())
+        // Update the favorites in SharedPreferences
+        val favoriteIds = sharedPreferences.getStringSet("favorite_ids", emptySet())
         val newFavoriteIds = favoriteIds?.toSet()?.plus(animeId) ?: setOf(animeId)
-        sharedPreferences.edit().putStringSet(favoriteIdsKey, newFavoriteIds).apply()
-
-        // Update the UI to reflect the new favorite status
-        binding.addToFavoritesButton.isChecked = true
+        sharedPreferences.edit().putStringSet("favorite_ids", newFavoriteIds).apply()
     }
-
     private fun removeAnimeFromFavorites(animeId: String) {
         val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
-        token = sharedPreferencesToken?.getString("token", "") ?: return
-        userId = sharedPreferencesToken?.getInt("user_id", 0) ?: return
+        val token = sharedPreferencesToken?.getString("token", "") ?: ""
 
         RetrofitClient.api.deleteFavorite("Bearer $token", animeId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -169,15 +171,9 @@ class AnimeInfoFragment : Fragment() {
             }
         })
 
-        // Remove from favorites using the unique key
-        val sharedPreferences = context?.getSharedPreferences("favorites_prefs_${token}", MODE_PRIVATE) ?: return
-        val favoriteIdsKey = "favorite_ids_$userId"
-        val favoriteIds = sharedPreferences.getStringSet(favoriteIdsKey, emptySet())
+        val favoriteIds = sharedPreferences.getStringSet("favorite_ids", emptySet())
         val newFavoriteIds = favoriteIds?.toSet()?.minus(animeId) ?: emptySet()
-        sharedPreferences.edit().putStringSet(favoriteIdsKey, newFavoriteIds).apply()
-
-        // Update the UI to reflect the new favorite status
-        binding.addToFavoritesButton.isChecked = false
+        sharedPreferences.edit().putStringSet("favorite_ids", newFavoriteIds).apply()
     }
 
     private fun fetchAnimeInfo(animeId: String) {
@@ -185,6 +181,12 @@ class AnimeInfoFragment : Fragment() {
             try {
                 val animeInfo: AnimeInfo = animeApiService.getAnimeInfo(animeId)
                 Log.d("Fetch Data", "Anime Information: ${animeInfo.title}")
+
+                // Log each episode's ID and number
+                animeInfo.episodes.forEach { episode ->
+                    Log.d("Fetch Data", "Episode ID: ${episode.id}, Number: ${episode.number}, URL: ${episode.url}")
+                }
+
                 withContext(Dispatchers.Main) {
                     // Update the UI with the anime information
                     updateAnimeInfoUI(animeInfo)
@@ -208,6 +210,10 @@ class AnimeInfoFragment : Fragment() {
             .load(animeInfo.image)
             .into(binding.animeImage)
 
+        Glide.with(this)
+            .load(animeInfo.image)
+            .into(binding.ivImage)
+
         // Update the anime URL
         //binding.animeUrl.text = animeInfo.url
 
@@ -221,11 +227,10 @@ class AnimeInfoFragment : Fragment() {
 
         // Update the anime genres
         binding.animeGenres.text = animeInfo.genres.joinToString(", ")
-        binding.animeGenresLabel.text = "Genres:"
 
         // Update the anime sub or dub
-        binding.animeSubOrDub.text = animeInfo.subOrDub
-        binding.animeSubOrDubLabel.text = "Sub or Dub:"
+        //binding.animeSubOrDub.text = animeInfo.subOrDub
+        //binding.animeSubOrDubLabel.text = "Sub or Dub:"
 
         // Update the anime type
         binding.animeType.text = animeInfo.type
@@ -236,16 +241,26 @@ class AnimeInfoFragment : Fragment() {
         binding.animeStatusLabel.text = "Status:"
 
         // Update the anime other name
-        binding.animeOtherName.text = animeInfo.otherName
-        binding.animeOtherNameLabel.text = "Other Name:"
+        //binding.animeOtherName.text = animeInfo.otherName
+        //binding.animeOtherNameLabel.text = "Other Name:"
     }
 
-    private fun updateUserId() {
-        val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
-        userId = sharedPreferencesToken?.getInt("user_id", 0)
+    private fun onEpisodeClicked(episode: EpisodeInfo) {
+        // Start VideoPlayerActivity and pass the episode ID
+        val intent = Intent(context, VideoPlayerActivity::class.java).apply {
+            putExtra("EPISODE_INFO", episode) // Pass the episode object
+        }
+        startActivity(intent)
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            animeId = savedInstanceState.getString("anime_id")
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("anime_id", animeId)
     }
 }

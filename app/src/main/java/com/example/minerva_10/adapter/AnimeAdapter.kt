@@ -1,5 +1,6 @@
 package com.example.minerva_10.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,7 @@ class AnimeAdapter(
         private val imageView: ImageView = view.findViewById(R.id.itemImage)
 
         fun bind(item: Item, onItemClick: (Item) -> Unit) {
+            Log.d("AnimeAdapter", "Binding item: ${item.title}")
             title.text = item.title
             imageView.load(item.image)
 

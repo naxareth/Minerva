@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/main"
     tools:context=".views.SignUpActivity"
+    android:background="#F8F8F8"
     android:orientation="vertical">
 
 
@@ -51,6 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:ems="10"
+            android:background="@color/transparent"
             android:hint="Email:"
             android:inputType="textEmailAddress" />
 
@@ -71,6 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:ems="10"
+            android:background="@color/transparent"
             android:hint="Username:"
             android:inputType="text" />
 
@@ -84,7 +87,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.569">
+        app:layout_constraintVertical_bias="0.569"
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etSignPass"
@@ -92,6 +96,7 @@
             android:layout_height="match_parent"
             android:ems="10"
             android:hint="Password:"
+            android:background="@color/transparent"
             android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -105,6 +110,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.639"
+        app:passwordToggleEnabled="true"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -113,7 +119,8 @@
             android:layout_height="match_parent"
             android:ems="10"
             android:hint="Confirm Password:"
-            android:inputType="text" />
+            android:background="@color/transparent"
+            android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
