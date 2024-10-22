@@ -39,6 +39,7 @@ class AnimeInfoFragment : Fragment() {
     private var token: String? = null
     private lateinit var sharedPreferences: SharedPreferences
     private var animeId: String? = null
+    private lateinit var animeInfo: AnimeInfo // Declare a variable to hold AnimeInfo
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,7 +92,7 @@ class AnimeInfoFragment : Fragment() {
     }
 
     private fun addAnimeToFavorites(animeId: String) {
-        val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE )
+        val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
         val token = sharedPreferencesToken?.getString("token", "") ?: ""
 
         // Retrieve the user ID from SharedPreferences
@@ -110,8 +111,7 @@ class AnimeInfoFragment : Fragment() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Fetch anime information
-                val animeInfo: AnimeInfo = animeApiService.getAnimeInfo(animeId)
+                // Fetch anime information animeInfo = animeApiService.getAnimeInfo(animeId)
                 val animeApiId = animeInfo.id
 
                 withContext(Dispatchers.Main) {
@@ -153,6 +153,7 @@ class AnimeInfoFragment : Fragment() {
         val newFavoriteIds = favoriteIds?.toSet()?.plus(animeId) ?: setOf(animeId)
         sharedPreferences.edit().putStringSet("favorite_ids", newFavoriteIds).apply()
     }
+
     private fun removeAnimeFromFavorites(animeId: String) {
         val sharedPreferencesToken = context?.getSharedPreferences("token_prefs", MODE_PRIVATE)
         val token = sharedPreferencesToken?.getString("token", "") ?: ""
@@ -179,7 +180,7 @@ class AnimeInfoFragment : Fragment() {
     private fun fetchAnimeInfo(animeId: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val animeInfo: AnimeInfo = animeApiService.getAnimeInfo(animeId)
+                animeInfo = animeApiService.getAnimeInfo(animeId) // Fetch and store the anime info
                 Log.d("Fetch Data", "Anime Information: ${animeInfo.title}")
 
                 // Log each episode's ID and number
@@ -229,7 +230,7 @@ class AnimeInfoFragment : Fragment() {
         binding.animeGenres.text = animeInfo.genres.joinToString(", ")
 
         // Update the anime sub or dub
-        //binding.animeSubOrDub.text = animeInfo.subOrDub
+        //binding.animeSub OrDub.text = animeInfo.subOrDub
         //binding.animeSubOrDubLabel.text = "Sub or Dub:"
 
         // Update the anime type
@@ -246,12 +247,14 @@ class AnimeInfoFragment : Fragment() {
     }
 
     private fun onEpisodeClicked(episode: EpisodeInfo) {
-        // Start VideoPlayerActivity and pass the episode ID
+        // Start VideoPlayerActivity and pass the episode ID and anime info
         val intent = Intent(context, VideoPlayerActivity::class.java).apply {
             putExtra("EPISODE_INFO", episode) // Pass the episode object
+            putExtra("ANIME_INFO", animeInfo) // Pass the anime info object
         }
         startActivity(intent)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {

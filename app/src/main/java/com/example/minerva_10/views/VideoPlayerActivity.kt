@@ -17,6 +17,8 @@ import com.example.minerva_10.api.responses.EpisodeInfo
 import com.example.minerva_10.api.responses.StreamingResponse
 import com.example.minerva_10.api.interfaces.AnimeApiService
 import com.example.minerva_10.api.responses.AnimeInfo
+import com.example.minerva_10.api.responses.DownloadItem
+import com.example.minerva_10.viewmodels.SharedAnimeViewModel
 import com.example.minerva_10.viewmodels.VideoPlayerViewModel
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -38,6 +40,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     private lateinit var episodeInfo: EpisodeInfo
     private lateinit var apiService: AnimeApiService
     private val viewModel: VideoPlayerViewModel by viewModels()
+    private val sharedViewModel: SharedAnimeViewModel by viewModels()
     private var availableQualities: List<String> = emptyList() // To hold available qualities
     private lateinit var downloadButton: Button // Declare the download button
 
@@ -52,7 +55,12 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         // Retrieve the AnimeInfo object from the intent
         val animeInfo = intent.getParcelableExtra<AnimeInfo>("ANIME_INFO")
-        animeTitleTextView.text = animeInfo?.title // Set the anime title
+        if (animeInfo == null) {
+            Log.e("VideoPlayerActivity", "AnimeInfo is null")
+        } else {
+            Log.d("VideoPlayerActivity", "Retrieved AnimeInfo: $animeInfo")
+            animeTitleTextView.text = animeInfo.title // Set the anime title
+        }
 
         episodeInfo = intent.getParcelableExtra("EPISODE_INFO") ?: return
 
@@ -81,9 +89,27 @@ class VideoPlayerActivity : AppCompatActivity() {
         downloadButton.setOnClickListener {
             val selectedQuality = availableQualities[qualitySpinner.selectedItemPosition]
             val filePath = "${externalCacheDir?.absolutePath}/${episodeInfo.number}.mp4" // Customize the file name as needed
+
+            // Create DownloadItem and add it to the ViewModel
+            val downloadItem = DownloadItem(
+                animeId = animeInfo?.id ?: "",
+                animeTitle = animeInfo?.title ?: "",
+                episodeNumber = episodeInfo.number,
+                coverImageUrl = animeInfo?.image ?: "",
+                progress = 0
+            )
+
+            // Log the DownloadItem before adding to ViewModel
+            Log.d("VideoPlayerActivity", "Creating DownloadItem: $downloadItem")
+
+            sharedViewModel.addDownloadItem(downloadItem) // Add to Shared ViewModel
+
+            Log.d("VideoPlayerActivity", "Download button clicked, adding download item to Shared ViewModel: $downloadItem")
+
             fetchM3U8AndDownload(episodeInfo.id, selectedQuality, filePath) // Call the new method to handle m3u8 download
         }
     }
+
 
     private fun fetchStreamingLinks(episodeId: String) {
         lifecycleScope.launch {
@@ -91,7 +117,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 val serverName = "gogocdn"
                 Log.d("VideoPlayerActivity", "Fetching streaming links for Episode ID: $episodeId, Server: $serverName")
                 val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
-                Log.d("VideoPlayerActivity", "Streaming Response: $streamingResponse")
+                Log.d("VideoPlayerActivity", "Streaming Response: $streamingResponse ")
 
                 // Extract available qualities from the sources
                 availableQualities = streamingResponse.sources.map { it.quality }.distinct()
@@ -228,12 +254,13 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         // Configure OkHttpClient with timeouts
         val client = OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS) // Set connection timeout
-            .readTimeout(30, TimeUnit.SECONDS)    // Set read timeout
-            .writeTimeout(30, TimeUnit.SECONDS)   // Set write timeout
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
         FileOutputStream(outputFile).use { outputStream ->
+            var totalBytesRead = 0
             for (url in segmentUrls) {
                 Log.d("VideoPlayerActivity", "Downloading segment: $url")
                 val request = Request.Builder().url(url).build()
@@ -248,16 +275,19 @@ class VideoPlayerActivity : AppCompatActivity() {
                                 var bytesRead: Int
                                 while (input.read(buffer).also { bytesRead = it } != -1) {
                                     outputStream.write(buffer, 0, bytesRead)
+                                    totalBytesRead += bytesRead
+                                    // Update download progress in Shared ViewModel
+                                    val animeInfo = intent.getParcelableExtra<AnimeInfo>("ANIME_INFO")
+                                    val progressPercentage = (totalBytesRead * 100 / outputFile.length()).toInt()
+                                    sharedViewModel.updateDownloadProgress(animeInfo?.id ?: "", progressPercentage)
                                 }
                             }
                             Log.d("VideoPlayerActivity", "Finished downloading segment: $url")
                         }
                     }
                 } catch (e: IOException) {
-                    // Handle IOException specifically
                     Log.e("VideoPlayerActivity", "IOException downloading segment: $url, Error: ${e.message}")
                 } catch (e: Exception) {
-                    // Handle any other exceptions that occur during the download
                     Log.e("VideoPlayerActivity", "Exception downloading segment: $url, Error: ${e.message}")
                 }
             }

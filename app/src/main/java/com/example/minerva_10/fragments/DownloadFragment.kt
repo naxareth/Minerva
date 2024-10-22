@@ -1,72 +1,57 @@
 package com.example.minerva_10.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minerva_10.R
 import com.example.minerva_10.adapters.DownloadAdapter
-import com.example.minerva_10.api.responses.DownloadItem
-import com.example.minerva_10.viewmodels.SharedViewModel
-import androidx.fragment.app.activityViewModels
+import com.example.minerva_10.viewmodels.SharedAnimeViewModel
 
 class DownloadFragment : Fragment() {
-
+    private val viewModel: SharedAnimeViewModel by activityViewModels()
     private lateinit var recyclerView: RecyclerView
-    private lateinit var downloadAdapter: DownloadAdapter
-    private val downloadItems = mutableListOf<DownloadItem>()
-    private val sharedViewModel: SharedViewModel by activityViewModels()
-
+    private lateinit var adapter: DownloadAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("DownloadFragment", "onCreateView called")
         val view = inflater.inflate(R.layout.fragment_download, container, false)
-
-        // Retrieve the arguments from the Bundle
-        arguments?.let {
-            val animeTitle = it.getString("ANIME_TITLE")
-            val coverImageUrl = it.getString("COVER_IMAGE_URL")
-            val episodeNumber = it.getInt("EPISODE_NUMBER")
-
-            // Use this data to update your UI or add a download item
-            if (animeTitle != null && coverImageUrl != null) {
-                val downloadItem = DownloadItem(animeTitle, episodeNumber, coverImageUrl)
-                addDownloadItem(downloadItem) // Add this item to the RecyclerView
-            }
-        }
-
-        // Existing RecyclerView setup code...
         recyclerView = view.findViewById(R.id.recycler_view_downloads)
-        downloadAdapter = DownloadAdapter(downloadItems)
-        recyclerView.adapter = downloadAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        // Observe the shared ViewModel for any new download items
-        sharedViewModel.downloadItem.observe(viewLifecycleOwner) { downloadItem ->
-            addDownloadItem(downloadItem)
+        // Initialize the adapter
+        adapter = DownloadAdapter()
+        recyclerView.adapter = adapter
+
+        // Observe the download items
+        viewModel.downloadItems.observe(viewLifecycleOwner) { items ->
+            Log.d("DownloadFragment", "Observed download items: $items") // Log the items
+            adapter.submitList(items) // Update the adapter with new data
+            if (items.isEmpty()) {
+                Log.d("DownloadFragment", "No download items available.")
+            } else {
+                Log.d("DownloadFragment", "Download items updated: ${items.size} items.")
+            }
         }
 
         return view
     }
 
-    fun addDownloadItem(downloadItem: DownloadItem) {
-        downloadItems.add(downloadItem)
-        downloadAdapter.notifyItemInserted(downloadItems.size - 1)
+    override fun onStart() {
+        super.onStart()
+        Log.d("DownloadFragment", "Fragment is visible and active")
     }
 
-    fun updateDownloadProgress(position: Int, progress: Int) {
-        if (position in downloadItems.indices) {
-            downloadItems[position].progress = progress
-            downloadAdapter.notifyItemChanged(position)
-        }
-    }
-
-    fun getDownloadItemCount(): Int {
-        return downloadItems.size
+    override fun onStop() {
+        super.onStop()
+        Log.d("DownloadFragment", "Fragment is no longer visible")
     }
 }

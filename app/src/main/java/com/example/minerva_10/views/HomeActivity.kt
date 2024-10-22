@@ -57,10 +57,13 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.downloads -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, SettingsFragment())
-                        .addToBackStack(null)
-                        .commit()
+                    val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+                    if (currentFragment !is DownloadFragment) {
+                        supportFragmentManager.beginTransaction()
+                            .add(R.id.fragment_container, DownloadFragment())
+                            .addToBackStack(null)
+                            .commit()
+                    }
                     true
                 }
                 else -> false

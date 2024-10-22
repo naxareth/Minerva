@@ -22,7 +22,7 @@
     <item
         android:id="@+id/downloads"
         android:title="Downloads"
-        android:icon="@drawable/more_horiz_24px"
+        android:icon="@drawable/download"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
