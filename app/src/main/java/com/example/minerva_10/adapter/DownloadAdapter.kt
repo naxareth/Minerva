@@ -3,11 +3,13 @@ package com.example.minerva_10.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.minerva_10.R
 import com.example.minerva_10.api.responses.DownloadItem
 
@@ -23,17 +25,23 @@ class DownloadAdapter : ListAdapter<DownloadItem, DownloadAdapter.DownloadViewHo
         holder.bind(downloadItem)
     }
 
-    class DownloadViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+    class DownloadViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val animeTitleTextView: TextView = itemView.findViewById(R.id.item_anime_title)
         private val episodeNumberTextView: TextView = itemView.findViewById(R.id.item_episode_number)
         private val progressBar: ProgressBar = itemView.findViewById(R.id.item_download_progress)
         private val progressTextView: TextView = itemView.findViewById(R.id.item_progress_text)
+        private val animeCoverImageView: ImageView = itemView.findViewById(R.id.item_anime_cover)
 
         fun bind(downloadItem: DownloadItem) {
             animeTitleTextView.text = downloadItem.animeTitle
             episodeNumberTextView.text = "Episode: ${downloadItem.episodeNumber}"
             progressBar.progress = downloadItem.progress
             progressTextView.text = "Download Progress: ${downloadItem.progress}%"
+
+            // Load the anime cover image using Glide
+            Glide.with(itemView.context)
+                .load(downloadItem.coverImageUrl)
+                .into(animeCoverImageView)
         }
     }
 

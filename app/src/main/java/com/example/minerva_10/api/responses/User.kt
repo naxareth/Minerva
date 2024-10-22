@@ -26,7 +26,6 @@ data class LoginResponse(
     val message: String,
     val token_type: String,
     val token: String,
-    val userId: Int
 )
 
 data class RegisterResponse(

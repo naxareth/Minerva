@@ -26,14 +26,11 @@ class FavoriteFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_favorite, container, false)
 
         recyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = GridLayoutManager(context, 1) // Set column count to 1
+        recyclerView.layoutManager = GridLayoutManager(context, 1)
 
         adapter = FavoriteParentAdapter(emptyList(), requireActivity()) { favoriteResource ->
-            // Create a bundle to pass the anime item
             val bundle = Bundle()
-            bundle.putString("anime_id", favoriteResource.anime_id) // Pass the item's ID
-
-            // Navigate to the AnimeInfoFragment
+            bundle.putString("anime_id", favoriteResource.anime_id)
             val animeInfoFragment = AnimeInfoFragment()
             animeInfoFragment.arguments = bundle
             fragmentManager?.beginTransaction()?.replace(R.id.fragment_container, animeInfoFragment)?.commit()
@@ -43,35 +40,22 @@ class FavoriteFragment : Fragment() {
         val token = arguments?.getString("token")
 
         if (token != null) {
-            // Use the token to fetch data from the API
-            RetrofitClient.api.getFavorites("Bearer $token").enqueue(object :
-                Callback<FavoriteResponse> {
+            RetrofitClient.api.getFavorites("Bearer $token").enqueue(object : Callback<FavoriteResponse> {
                 override fun onResponse(call: Call<FavoriteResponse>, response: Response<FavoriteResponse>) {
                     if (response.isSuccessful) {
                         val favoriteResponse = response.body()
-                        if (favoriteResponse != null) {
-                            val favoriteResources = favoriteResponse.data
-                            if (favoriteResources != null) {
-                                if (favoriteResources.isNotEmpty()) {
-                                    adapter.favoriteResources = favoriteResources
-                                    adapter.notifyDataSetChanged()
-                                } else {
-                                    // Handle empty list
-                                    Toast.makeText(context, "No favorites found", Toast.LENGTH_SHORT).show()
-                                }
-                            } else {
-                                // Handle null favoriteResources
-                                Toast.makeText(context, "No favorites found", Toast.LENGTH_SHORT).show()
-                            }
+                        if (favoriteResponse != null && favoriteResponse.data.isNotEmpty()) {
+                            adapter.favoriteResources = favoriteResponse.data
+                            adapter.notifyDataSetChanged()
+                        } else {
+                            Toast.makeText(context, "No favorites found", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        // Handle unsuccessful response
                         Toast.makeText(context, "Failed to fetch favorites", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<FavoriteResponse>, t: Throwable) {
-                    // Handle failure
                     Toast.makeText(context, "Failed to fetch favorites", Toast.LENGTH_SHORT).show()
                 }
             })

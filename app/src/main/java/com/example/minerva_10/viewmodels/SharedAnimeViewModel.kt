@@ -12,20 +12,19 @@ class SharedAnimeViewModel : ViewModel() {
 
     fun addDownloadItem(downloadItem: DownloadItem) {
         val currentList = _downloadItems.value ?: emptyList()
-        Log.d("SharedAnimeViewModel", "Current Download Items: $currentList")
         _downloadItems.value = currentList + downloadItem
-        Log.d("SharedAnimeViewModel", "Added Download Item: $downloadItem, New List: ${_downloadItems.value}")
+        Log.d("SharedAnimeViewModel", "Added download item: $downloadItem, Current list: ${_downloadItems.value}")
     }
 
     fun updateDownloadProgress(animeId: String, progress: Int) {
         val currentList = _downloadItems.value ?: return
         val updatedList = currentList.map { item ->
             if (item.animeId == animeId) {
-                item.copy(progress = progress) // Update progress for the specific item
+                item.copy(progress = progress)
             } else {
                 item
             }
         }
-        _downloadItems.postValue(updatedList) // Use postValue to update from background thread
+        _downloadItems.postValue(updatedList)
     }
 }

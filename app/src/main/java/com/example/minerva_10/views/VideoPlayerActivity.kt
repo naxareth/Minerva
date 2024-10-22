@@ -1,5 +1,6 @@
 package com.example.minerva_10.views
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,6 +11,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.minerva_10.R
 import com.example.minerva_10.api.RetrofitClient
@@ -40,13 +42,16 @@ class VideoPlayerActivity : AppCompatActivity() {
     private lateinit var episodeInfo: EpisodeInfo
     private lateinit var apiService: AnimeApiService
     private val viewModel: VideoPlayerViewModel by viewModels()
-    private val sharedViewModel: SharedAnimeViewModel by viewModels()
+    private lateinit var sharedViewModel: SharedAnimeViewModel // Use the shared ViewModel
     private var availableQualities: List<String> = emptyList() // To hold available qualities
     private lateinit var downloadButton: Button // Declare the download button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_player)
+
+        // Initialize the Shared ViewModel
+        sharedViewModel = ViewModelProvider(this).get(SharedAnimeViewModel::class.java)
 
         playerView = findViewById(R.id.player_view)
         animeTitleTextView = findViewById(R.id.anime_title)
@@ -102,14 +107,18 @@ class VideoPlayerActivity : AppCompatActivity() {
             // Log the DownloadItem before adding to ViewModel
             Log.d("VideoPlayerActivity", "Creating DownloadItem: $downloadItem")
 
-            sharedViewModel.addDownloadItem(downloadItem) // Add to Shared ViewModel
+            // Add to Shared ViewModel
+            sharedViewModel.addDownloadItem(downloadItem)
 
-            Log.d("VideoPlayerActivity", "Download button clicked, adding download item to Shared ViewModel: $downloadItem")
+            Log.d(" VideoPlayerActivity", "Download button clicked, adding download item to Shared ViewModel: $downloadItem")
 
             fetchM3U8AndDownload(episodeInfo.id, selectedQuality, filePath) // Call the new method to handle m3u8 download
+
+
+            val intent = Intent(this, DownloadActivity::class.java)
+            startActivity(intent)
         }
     }
-
 
     private fun fetchStreamingLinks(episodeId: String) {
         lifecycleScope.launch {

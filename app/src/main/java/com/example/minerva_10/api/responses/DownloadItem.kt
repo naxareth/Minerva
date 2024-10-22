@@ -5,5 +5,5 @@ data class DownloadItem(
     val animeTitle: String,
     val episodeNumber: Int,
     val coverImageUrl: String,
-    var progress: Int = 0
+    var progress: Int
 )

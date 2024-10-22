@@ -2,6 +2,7 @@ package com.example.minerva_10.views
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -65,20 +66,20 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
                     val token = loginResponse?.token
-                    val userId = loginResponse?.userId // Ensure this is part of the response
                     val message = loginResponse?.message
 
-                    if (token != null && message != null && userId != null) {
-                        // Store the token and user ID securely
+                    if (token != null && message != null) {
                         val sharedPreferences = getSharedPreferences("token_prefs", MODE_PRIVATE)
                         val editor = sharedPreferences.edit()
                         editor.putString("token", token)
-                        editor.putInt("user_id", userId) // Store user ID correctly
                         editor.apply()
+
+                        Log.d("SharedPreferences", "Stored token: $token")
 
                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                         intent.putExtra("token", token)
                         startActivity(intent)
+                        finish()
                     } else {
                         Toast.makeText(this@LoginActivity, "Invalid response", Toast.LENGTH_SHORT).show()
                     }
@@ -92,8 +93,6 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
-
-
 
     private fun handleErrorResponse(code: Int) {
         when (code) {
@@ -114,7 +113,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun handleFailureError(t: Throwable) {
         if (t is IOException) {
-            Toast.makeText(this, "Account not found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Network error, please try again", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
         }
