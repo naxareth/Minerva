@@ -5,6 +5,8 @@
     android:orientation="horizontal"
     android:padding="8dp">
 
+
+
     <!-- Anime Thumbnail Image -->
     <ImageView
         android:id="@+id/animeThumbnail"
