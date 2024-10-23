@@ -28,7 +28,7 @@
         android:paddingStart="10dp"
         android:text="adsasfasfsdfsdfsd"
         android:textColor="@android:color/white"
-        android:layout_margin="10dp"
+        android:layout_margin="15dp"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

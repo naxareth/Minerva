@@ -37,7 +37,15 @@ class AnimeAdapter(
 
         fun bind(item: Item, onItemClick: (Item) -> Unit) {
             Log.d("AnimeAdapter", "Binding item: ${item.title}")
-            title.text = item.title
+
+            // Apply truncation if the title length is more than 20 characters
+            val truncatedTitle = if (item.title.length > 30) {
+                item.title.take(30) + "..." // Truncate and add ellipsis
+            } else {
+                item.title // No truncation
+            }
+
+            title.text = truncatedTitle
             imageView.load(item.image)
 
             // Set an onClickListener for the ImageView

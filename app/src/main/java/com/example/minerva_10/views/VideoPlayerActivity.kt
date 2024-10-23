@@ -1,5 +1,6 @@
 package com.example.minerva_10.views
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,10 +15,10 @@ import androidx.lifecycle.lifecycleScope
 import com.example.minerva_10.R
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.EpisodeInfo
-import com.example.minerva_10.api.responses.StreamingResponse
 import com.example.minerva_10.api.interfaces.AnimeApiService
 import com.example.minerva_10.api.responses.AnimeInfo
 import com.example.minerva_10.api.responses.DownloadItem
+import com.example.minerva_10.api.responses.StreamingResponse
 import com.example.minerva_10.viewmodels.SharedAnimeViewModel
 import com.example.minerva_10.viewmodels.VideoPlayerViewModel
 import com.google.android.exoplayer2.MediaItem
@@ -43,6 +44,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     private val sharedViewModel: SharedAnimeViewModel by viewModels()
     private var availableQualities: List<String> = emptyList() // To hold available qualities
     private lateinit var downloadButton: Button // Declare the download button
+    private lateinit var animeInfo: AnimeInfo // Store the AnimeInfo object
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,20 +56,14 @@ class VideoPlayerActivity : AppCompatActivity() {
         downloadButton = findViewById(R.id.download_button) // Initialize the download button
 
         // Retrieve the AnimeInfo object from the intent
-        val animeInfo = intent.getParcelableExtra<AnimeInfo>("ANIME_INFO")
-        if (animeInfo == null) {
-            Log.e("VideoPlayerActivity", "AnimeInfo is null")
-        } else {
-            Log.d("VideoPlayerActivity", "Retrieved AnimeInfo: $animeInfo")
-            animeTitleTextView.text = animeInfo.title // Set the anime title
-        }
+        animeInfo = intent.getParcelableExtra("ANIME_INFO") ?: return
+        Log.d("VideoPlayerActivity", "Retrieved AnimeInfo: $animeInfo")
+        updateAnimeTitle() // Set the anime title with truncation
 
         episodeInfo = intent.getParcelableExtra("EPISODE_INFO") ?: return
 
-        // Initialize your ApiService
         apiService = RetrofitClient.animeApiService
 
-        // Initialize ExoPlayer
         if (viewModel.player == null) {
             viewModel.player = SimpleExoPlayer.Builder(this).build()
             playerView.player = viewModel.player
@@ -76,30 +72,27 @@ class VideoPlayerActivity : AppCompatActivity() {
             viewModel.player?.seekTo(viewModel.playbackPosition)
         }
 
-        // Set controller visibility listener
         playerView.setControllerVisibilityListener { visibility ->
             qualitySpinner.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
             downloadButton.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
+            animeTitleTextView.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
         }
 
-        // Fetch streaming links to set up the quality spinner
         fetchStreamingLinks(episodeInfo.id)
 
-        // Set up download button click listener
         downloadButton.setOnClickListener {
             val selectedQuality = availableQualities[qualitySpinner.selectedItemPosition]
             val filePath = "${externalCacheDir?.absolutePath}/${episodeInfo.number}.mp4" // Customize the file name as needed
 
             // Create DownloadItem and add it to the ViewModel
             val downloadItem = DownloadItem(
-                animeId = animeInfo?.id ?: "",
-                animeTitle = animeInfo?.title ?: "",
+                animeId = animeInfo.id, // Use the retrieved animeId
+                animeTitle = animeInfo.title, // Use the retrieved animeTitle
                 episodeNumber = episodeInfo.number,
-                coverImageUrl = animeInfo?.image ?: "",
+                coverImageUrl = animeInfo.image, // Use the retrieved coverImageUrl
                 progress = 0
             )
 
-            // Log the DownloadItem before adding to ViewModel
             Log.d("VideoPlayerActivity", "Creating DownloadItem: $downloadItem")
 
             sharedViewModel.addDownloadItem(downloadItem) // Add to Shared ViewModel
@@ -108,6 +101,27 @@ class VideoPlayerActivity : AppCompatActivity() {
 
             fetchM3U8AndDownload(episodeInfo.id, selectedQuality, filePath) // Call the new method to handle m3u8 download
         }
+    }
+
+    // Utility function to truncate the anime title based on device orientation
+    private fun truncateTitle(title: String): String {
+        val maxLength = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 20 else 40
+        return if (title.length > maxLength) {
+            title.substring(0, maxLength) + "..."
+        } else {
+            title
+        }
+    }
+
+    // Update the anime title when the orientation changes
+    private fun updateAnimeTitle() {
+        animeTitleTextView.text = truncateTitle(animeInfo.title)
+    }
+
+    // Override onConfigurationChanged to handle orientation changes
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateAnimeTitle() // Update the anime title based on the new orientation
     }
 
 
@@ -119,11 +133,9 @@ class VideoPlayerActivity : AppCompatActivity() {
                 val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
                 Log.d("VideoPlayerActivity", "Streaming Response: $streamingResponse ")
 
-                // Extract available qualities from the sources
                 availableQualities = streamingResponse.sources.map { it.quality }.distinct()
                 setupQualitySpinner(availableQualities)
 
-                // Play the video with the default quality
                 val defaultQuality = availableQualities.firstOrNull() ?: "360p" // Fallback to 360p if no qualities are available
                 fetchAndPlayVideo(episodeId, defaultQuality)
             } catch (e: HttpException) {
@@ -135,7 +147,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     private fun setupQualitySpinner(qualities: List<String>) {
-        // Use the custom layout for spinner items
         val adapter = ArrayAdapter(this, R.layout.spinner_item, qualities)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         qualitySpinner.adapter = adapter
@@ -143,11 +154,9 @@ class VideoPlayerActivity : AppCompatActivity() {
         qualitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedQuality = qualities[position]
-                // Release previous player instance
                 viewModel.player?.release()
                 viewModel.player = null
 
-                // Fetch and play the video with the selected quality
                 fetchAndPlayVideo(episodeInfo.id, selectedQuality)
             }
 
@@ -162,17 +171,14 @@ class VideoPlayerActivity : AppCompatActivity() {
                 Log.d("VideoPlayerActivity", "Fetching streaming links for Episode ID: $episodeId, Server: $serverName, Quality: $quality")
                 val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
 
-                // Find the source with the selected quality
                 val selectedSource = streamingResponse.sources.find { it.quality == quality }
                 if (selectedSource != null) {
                     val videoUrl = selectedSource.url
                     Log.d("VideoPlayerActivity", "Playing video with URL: $videoUrl")
 
-                    // Initialize ExoPlayer
                     viewModel.player = SimpleExoPlayer.Builder(this@VideoPlayerActivity).build()
                     playerView.player = viewModel.player
 
-                    // Prepare the video for playback
                     val mediaItem = MediaItem.fromUri(videoUrl)
                     viewModel.player?.setMediaItem(mediaItem)
                     viewModel.player?.prepare()
@@ -196,13 +202,11 @@ class VideoPlayerActivity : AppCompatActivity() {
                     Log.d("VideoPlayerActivity", "Fetching streaming links for Episode ID: $episodeId, Server: $serverName, Quality: $quality")
                     val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
 
-                    // Find the source with the selected quality
                     val selectedSource = streamingResponse.sources.find { it.quality == quality }
                     if (selectedSource != null) {
                         val m3u8Url = selectedSource.url
                         Log.d("VideoPlayerActivity", "Fetching m3u8 from URL: $m3u8Url")
 
-                        // Fetch the m3u8 file
                         val client = OkHttpClient()
                         val request = Request.Builder().url(m3u8Url).build()
 
@@ -213,12 +217,10 @@ class VideoPlayerActivity : AppCompatActivity() {
                             }
                             val m3u8Content = response.body?.string() ?: return@withContext
 
-                            // Parse the m3u8 content to get segment URLs
                             val baseUrl = m3u8Url.substringBeforeLast("/") // Extract base URL from m3u8 URL
                             val segmentUrls = parseM3U8(m3u8Content, baseUrl)
 
-                            // Now download each segment
-                            downloadSegments(segmentUrls, filePath)
+                            downloadSegments(segmentUrls, filePath )
                         }
                     } else {
                         Log.e("VideoPlayerActivity", "No source found for quality: $quality")
@@ -236,7 +238,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         val segmentUrls = mutableListOf<String>()
         val lines = m3u8Content.split("\n")
         for (line in lines) {
-            if (line.endsWith(".ts")) { // Assuming the segments are in .ts format
+            if (line.endsWith(".ts")) {
                 val fullUrl = if (line.startsWith("http://") || line.startsWith("https://")) {
                     line.trim()
                 } else {
@@ -252,7 +254,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     private suspend fun downloadSegments(segmentUrls: List<String>, filePath: String) {
         val outputFile = File(filePath)
 
-        // Configure OkHttpClient with timeouts
         val client = OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -276,10 +277,8 @@ class VideoPlayerActivity : AppCompatActivity() {
                                 while (input.read(buffer).also { bytesRead = it } != -1) {
                                     outputStream.write(buffer, 0, bytesRead)
                                     totalBytesRead += bytesRead
-                                    // Update download progress in Shared ViewModel
-                                    val animeInfo = intent.getParcelableExtra<AnimeInfo>("ANIME_INFO")
                                     val progressPercentage = (totalBytesRead * 100 / outputFile.length()).toInt()
-                                    sharedViewModel.updateDownloadProgress(animeInfo?.id ?: "", progressPercentage)
+                                    sharedViewModel.updateDownloadProgress(animeInfo.id, progressPercentage)
                                 }
                             }
                             Log.d("VideoPlayerActivity", "Finished downloading segment: $url")

@@ -21,11 +21,11 @@ class SharedAnimeViewModel : ViewModel() {
         val currentList = _downloadItems.value ?: return
         val updatedList = currentList.map { item ->
             if (item.animeId == animeId) {
-                item.copy(progress = progress) // Update progress for the specific item
+                item.copy(progress = progress)
             } else {
                 item
             }
         }
-        _downloadItems.postValue(updatedList) // Use postValue to update from background thread
+        _downloadItems.postValue(updatedList)
     }
 }
