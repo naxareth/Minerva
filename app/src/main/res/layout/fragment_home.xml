@@ -8,13 +8,13 @@
 
     <!-- Username TextView -->
 
+    <!-- RecyclerView -->
 
-    <!-- Logout Button -->
     <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:fontFamily="@font/bebas"
@@ -24,27 +24,38 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/parentRecyclerView"
         app:layout_constraintEnd_toStartOf="@+id/btLogout"
-        app:layout_constraintHorizontal_bias="0.09"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.315" />
+        app:layout_constraintVertical_bias="0.575" />
 
-    <Button
-        android:id="@+id/btLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:text="Logout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/parentRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="464dp"
         android:layout_weight="1"
+        android:background="@color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btLogout" />
+
+    <!-- FloatingActionButton without shadow -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@id/btLogout"
+        android:layout_width="105dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        android:src="@drawable/more_horiz_24px"
+        app:backgroundTint="@color/transparent"
+        app:elevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:maxImageSize="30dp" /> <!-- This removes the shadow -->
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:srcCompat="@drawable/more_horiz_24px" />
 </androidx.constraintlayout.widget.ConstraintLayout>
