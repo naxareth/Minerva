@@ -9,16 +9,22 @@ class SharedViewModel : ViewModel() {
     private val _animeList = MutableLiveData<List<Item>>()
     val animeList: LiveData<List<Item>> get() = _animeList
 
-    // Add a new LiveData property to store the "TOP AIRING" animes
     private val _topAiringList = MutableLiveData<List<Item>>()
     val topAiringList: LiveData<List<Item>> get() = _topAiringList
+
+    private val _recentEpisodesList = MutableLiveData<List<Item>>()
+    val recentEpisodesList: LiveData<List<Item>> get() = _recentEpisodesList
 
     fun setAnimeList(anime: List<Item>) {
         _animeList.value = anime
     }
 
-    // Function to set "TOP AIRING" animes
     fun setTopAiringList(anime: List<Item>) {
         _topAiringList.value = anime
     }
+
+    fun setRecentEpisodesList(anime: List<Item>) {
+        _recentEpisodesList.value = anime
+    }
 }
+
