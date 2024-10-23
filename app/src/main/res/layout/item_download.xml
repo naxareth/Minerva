@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Anime Cover Image -->
+    <ImageView
+        android:id="@+id/item_anime_cover"
+        android:layout_width="80dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Anime Title -->
+    <TextView
+        android:id="@+id/item_anime_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Anime Title"
+        android:fontFamily="@font/bebas"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="4dp" />
+
+    <!-- Download Progress Bar -->
+    <ProgressBar
+        android:id="@+id/item_download_progress"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="0"
+        android:layout_marginTop="4dp" />
+
+    <!-- Download Progress Text -->
+    <TextView
+        android:id="@+id/item_progress_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download Progress: 0%"
+        android:fontFamily="@font/oswald"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- Episode Number -->
+    <TextView
+        android:id="@+id/item_episode_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/oswald"
+        android:text="Episode: 1"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+</LinearLayout>

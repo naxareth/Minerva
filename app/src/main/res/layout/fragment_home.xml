@@ -4,33 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="#F8F8F8">
 
-    <!-- Toolbar or Top Menu -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
+    <!-- Username TextView -->
+
+
+    <!-- Logout Button -->
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:fontFamily="@font/bebas"
+        android:gravity="left"
+        android:text="HELLO, USERNAME"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/parentRecyclerView"
+        app:layout_constraintEnd_toStartOf="@+id/btLogout"
+        app:layout_constraintHorizontal_bias="0.09"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:elevation="4dp"
-        app:title="Home"
-        app:titleTextColor="@android:color/white" />
+        app:layout_constraintVertical_bias="0.315" />
 
-    <!-- Search Bar -->
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
-        android:layout_width="0dp"
+    <Button
+        android:id="@+id/btLogout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Logout"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"
-        android:queryHint="Search..."
-        app:iconifiedByDefault="false"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/parentRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btLogout" />
 </androidx.constraintlayout.widget.ConstraintLayout>
