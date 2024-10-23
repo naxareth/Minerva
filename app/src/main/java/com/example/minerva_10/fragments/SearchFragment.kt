@@ -127,12 +127,8 @@ class SearchFragment : Fragment() {
                 val recentEpisodesResults = RetrofitClient.animeApiService.getRecentEpisodes(currentPage)
 
                 // Filter and map top airing results
-                val filteredTopAiring = topAiringResults.results.filter {
-                    it.title.startsWith(query, ignoreCase = true) // Ensure title starts with the first letter of the query
-                }
-                val filteredRecentEpisodes = recentEpisodesResults.results.filter {
-                    it.title.startsWith(query, ignoreCase = true) // Same filtering logic for recent episodes
-                }
+                val filteredTopAiring = topAiringResults.results.filter { it.title.contains(query, ignoreCase = true) }
+                val filteredRecentEpisodes = recentEpisodesResults.results.filter { it.title.contains(query, ignoreCase = true) }
 
                 // Map filtered results to SearchResult objects with release date and subOrDub
                 val combinedResults = (filteredTopAiring + filteredRecentEpisodes).map {
@@ -145,7 +141,6 @@ class SearchFragment : Fragment() {
                     )
                 }
 
-                // Update the anime list and notify the adapter
                 animeList.addAll(combinedResults)
                 animeAdapter.notifyDataSetChanged()
 
@@ -160,5 +155,7 @@ class SearchFragment : Fragment() {
             }
         }
     }
+
+
 
 }
