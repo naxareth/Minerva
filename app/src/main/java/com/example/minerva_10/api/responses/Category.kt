@@ -18,4 +18,6 @@ data class Item(
     val id: String,
     val title: String,
     val image: String,
+    val releaseDate: String? = null,  // Use `?` for nullable properties
+    val subOrDub: String? = null
 ) : Parcelable
