@@ -5,7 +5,6 @@ import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.minerva_10.fragments.HomeFragment
 import com.example.minerva_10.R
-import com.example.minerva_10.fragments.DownloadFragment
 import com.example.minerva_10.fragments.FavoriteFragment
 import com.example.minerva_10.fragments.SearchFragment
 import com.example.minerva_10.fragments.SettingsFragment
@@ -54,16 +53,6 @@ class HomeActivity : AppCompatActivity() {
                         .replace(R.id.fragment_container, favoriteFragment)
                         .addToBackStack(null)
                         .commit()
-                    true
-                }
-                R.id.downloads -> {
-                    val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-                    if (currentFragment !is DownloadFragment) {
-                        supportFragmentManager.beginTransaction()
-                            .add(R.id.fragment_container, DownloadFragment())
-                            .addToBackStack(null)
-                            .commit()
-                    }
                     true
                 }
                 else -> false
