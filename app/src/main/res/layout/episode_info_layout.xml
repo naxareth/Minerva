@@ -2,14 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="8dp"
+        android:layout_margin="5dp"
+        android:elevation="10dp"
+        android:backgroundTint="#F6306B">
     <TextView
         android:id="@+id/episode_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:layout_marginTop="10dp"
-        android:textColor="#F6306B"/>
+        android:layout_margin="10dp"
+        android:textColor="@color/white"/>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

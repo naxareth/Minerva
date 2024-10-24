@@ -39,6 +39,26 @@ data class LogoutResponse(
     val message: String
 )
 
+data class OtpRequest(
+    val email: String
+)
+
+data class VerifyOtpRequest(
+    val email: String,
+    val otp: String
+)
+
+data class ChangePasswordRequest(
+    val email: String,
+    val otp: String,
+    val password: String,
+    val password_confirmation: String
+)
+
+data class ChangePasswordResponse(
+    val message: String
+)
+
 data class ProfileResponse(
     val message: String,
     val data: User

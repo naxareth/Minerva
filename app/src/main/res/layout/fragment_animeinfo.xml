@@ -71,6 +71,13 @@
                 </androidx.cardview.widget.CardView>
 
             </FrameLayout>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="8dp"
+                android:layout_margin="10dp"
+                android:elevation="10dp">
             <!--
             <Button
                 android:id="@+id/play_button"
@@ -88,7 +95,10 @@
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
                 android:textColor="#F6306B"/>
 
             <!-- Anime Genres -->
@@ -98,8 +108,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
                />
+            </androidx.cardview.widget.CardView>
 
             <!-- Anime URL
             <TextView
@@ -107,6 +121,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="16sp" />-->
+
 
             <!-- Anime Release Date -->
             <TextView
