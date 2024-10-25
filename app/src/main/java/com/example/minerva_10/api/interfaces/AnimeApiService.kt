@@ -24,10 +24,12 @@ interface AnimeApiService {
     @GET("info/{id}/episodes")
     suspend fun getAnimeEpisodes(@Path("id") id: String): List<EpisodeInfo>
 
-    @GET("search")  // Replace with the correct endpoint
-    fun searchAnime(
-        @Query("query") query: String
-    ): Call<Search>
+    // Suspend function for searching anime
+    @GET("{query}")
+    suspend fun searchAnime(
+        @Path("query") query: String,  // Use @Path for the query parameter
+        @Query("page") page: Int       // Keep page as a query parameter
+    ): Search  // Return the Search response directly
 
 
     @GET("servers/{episodeId}")

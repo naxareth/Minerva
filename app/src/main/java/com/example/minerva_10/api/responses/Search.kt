@@ -5,3 +5,11 @@ data class Search(
     val hasNextPage: Boolean,
     val results: List<SearchResult>
 )
+
+data class SearchResult(
+    val id: String,
+    val title: String,
+    val image: String,
+    val releaseDate: String?,
+    val subOrDub: String?
+)

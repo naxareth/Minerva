@@ -25,21 +25,17 @@ class SearchFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var animeAdapter: AnimeAdapter2
     private lateinit var searchEditText: EditText
-    private lateinit var recommendedTitleTextView: TextView  // Add a TextView for "RECOMMENDED"
     private var animeList: MutableList<SearchResult> = mutableListOf()
 
     private var currentPage = 1
     private var hasNextPage = true
     private var isLoading = false
 
-    private lateinit var sharedViewModel: SharedViewModel
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_search, container, false)
-        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         searchEditText = view.findViewById(R.id.searchEditText)
         recyclerView = view.findViewById(R.id.recommendedAnimeRecyclerView)
@@ -48,14 +44,11 @@ class SearchFragment : Fragment() {
         animeAdapter = AnimeAdapter2(animeList)
         recyclerView.adapter = animeAdapter
 
-        recyclerView.adapter = animeAdapter
-
         setupSearch()
 
-        // Load recommended anime on fragment creation
+        // Load recommended anime initially (from Top Airing)
         loadRecommendedAnime()
 
-// Add scroll listener for pagination
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -66,15 +59,11 @@ class SearchFragment : Fragment() {
 
                 if (!isLoading && hasNextPage) {
                     if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
-                        // Load next page
                         fetchPaginatedSearchResults(searchEditText.text.toString())
                     }
                 }
             }
         })
-
-
-        setupSearch()
 
         return view
     }
@@ -101,10 +90,10 @@ class SearchFragment : Fragment() {
                 val recommendedAnimeList = topAiringResults.results.map {
                     SearchResult(
                         id = it.id,
+                        title = it.title,
                         image = it.image,
                         releaseDate = it.releaseDate ?: "Unknown",
-                        subOrDub = it.subOrDub ?: "Unknown",
-                        title = it.title
+                        subOrDub = it.subOrDub ?: "Unknown"
                     )
                 }
                 animeList.addAll(recommendedAnimeList)
@@ -115,37 +104,21 @@ class SearchFragment : Fragment() {
         }
     }
 
-
     private fun fetchPaginatedSearchResults(query: String) {
         if (isLoading || !hasNextPage) return
         isLoading = true
 
         lifecycleScope.launch {
             try {
-                // Fetch paginated data from both categories
-                val topAiringResults = RetrofitClient.animeApiService.getTopAiringAnimes(currentPage)
-                val recentEpisodesResults = RetrofitClient.animeApiService.getRecentEpisodes(currentPage)
+                // Call the searchAnime API for search results
+                val searchResults = RetrofitClient.animeApiService.searchAnime(query, currentPage)
 
-                // Filter and map top airing results
-                val filteredTopAiring = topAiringResults.results.filter { it.title.contains(query, ignoreCase = true) }
-                val filteredRecentEpisodes = recentEpisodesResults.results.filter { it.title.contains(query, ignoreCase = true) }
-
-                // Map filtered results to SearchResult objects with release date and subOrDub
-                val combinedResults = (filteredTopAiring + filteredRecentEpisodes).map {
-                    SearchResult(
-                        id = it.id,
-                        image = it.image,  // Assuming 'it.image' contains the URL for the anime image
-                        releaseDate = it.releaseDate ?: "Unknown",  // Provide a fallback if releaseDate is null
-                        subOrDub = it.subOrDub ?: "Unknown",  // Provide a fallback if subOrDub is null
-                        title = it.title
-                    )
-                }
-
-                animeList.addAll(combinedResults)
+                // Add the fetched results to the animeList
+                animeList.addAll(searchResults.results)
                 animeAdapter.notifyDataSetChanged()
 
-                // Determine if there are more pages to load
-                hasNextPage = topAiringResults.hasNextPage && recentEpisodesResults.hasNextPage
+                // Update pagination data
+                hasNextPage = searchResults.hasNextPage
                 currentPage++
 
             } catch (e: Exception) {
@@ -155,7 +128,5 @@ class SearchFragment : Fragment() {
             }
         }
     }
-
-
-
 }
+

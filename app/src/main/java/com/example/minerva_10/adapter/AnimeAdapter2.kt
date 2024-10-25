@@ -40,14 +40,12 @@ class AnimeAdapter2(private val animeList: MutableList<SearchResult>) :
         val anime = animeList[position]
         holder.animeTitle.text = anime.title
 
-        // Use strings.xml for release date and type text
         holder.releaseDate.text = holder.itemView.context.getString(R.string.release_date, anime.releaseDate)
         holder.subOrDub.text = holder.itemView.context.getString(R.string.type, anime.subOrDub)
 
-        // Load the image using Glide
         Glide.with(holder.itemView.context)
-            .load(anime.image)  // Assuming anime.image contains the image URL
-            .placeholder(R.drawable.placeholder)  // Ensure you have a placeholder image in res/drawable
+            .load(anime.image)
+            .placeholder(R.drawable.placeholder)
             .into(holder.animeThumbnail)
 
         holder.itemView.setOnClickListener {
@@ -59,3 +57,6 @@ class AnimeAdapter2(private val animeList: MutableList<SearchResult>) :
         return animeList.size
     }
 }
+
+
+
