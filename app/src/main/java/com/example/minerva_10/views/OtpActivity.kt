@@ -2,8 +2,10 @@ package com.example.minerva_10.views
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.minerva_10.R
@@ -24,6 +26,11 @@ class OtpActivity : AppCompatActivity() {
     private lateinit var etConfirmNewPassword: EditText
     private lateinit var btSendOtp: Button
     private lateinit var btChangePassword: Button
+    private lateinit var tvCooldown: TextView // TextView to display cooldown timer
+    private lateinit var backButton: Button // Add this line
+
+    private var countdownTimer: CountDownTimer? = null
+    private var isCooldown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,12 +42,24 @@ class OtpActivity : AppCompatActivity() {
         etConfirmNewPassword = findViewById(R.id.etConfirmNewPassword)
         btSendOtp = findViewById(R.id.btSendOtp)
         btChangePassword = findViewById(R.id.btChangePassword)
+        tvCooldown = findViewById(R.id.tvCooldown) // Initialize the TextView
+        backButton = findViewById(R.id.backButton) // Initialize the back button
+
+        // Set OnClickListener for the back button
+        backButton.setOnClickListener {
+            finish() // Close the current activity
+        }
 
         btSendOtp.setOnClickListener {
             val email = etEmail.text.toString()
 
             if (email.isEmpty()) {
                 Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (isCooldown) {
+                Toast.makeText(this, "Please wait before requesting a new OTP", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -68,12 +87,12 @@ class OtpActivity : AppCompatActivity() {
             verifyOtp(verifyOtpRequest, newPassword, confirmNewPassword)
         }
     }
-
     private fun sendOtp(otpRequest: OtpRequest) {
         RetrofitClient.api.sendOtp(otpRequest).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(this@OtpActivity, "OTP sent successfully", Toast.LENGTH_SHORT).show()
+                    startCooldown() // Start the cooldown timer
                 } else {
                     handleErrorResponse(response.code())
                 }
@@ -83,6 +102,24 @@ class OtpActivity : AppCompatActivity() {
                 handleFailureError(t)
             }
         })
+    }
+
+    private fun startCooldown() {
+        isCooldown = true
+        btSendOtp.isEnabled = false // Disable the button
+        countdownTimer = object : CountDownTimer(60000, 1000) { // 1 minute cooldown
+            override fun onTick(millisUntilFinished: Long) {
+                val seconds = ( millisUntilFinished / 1000) % 60
+                val minutes = (millisUntilFinished / 1000) / 60
+                tvCooldown.text = String.format("%02d:%02d", minutes, seconds) // Format the string as "00:00"
+            }
+
+            override fun onFinish() {
+                isCooldown = false
+                btSendOtp.isEnabled = true // Re-enable the button
+                tvCooldown.text = "" // Clear the cooldown text
+            }
+        }.start()
     }
 
     private fun verifyOtp(verifyOtpRequest: VerifyOtpRequest, newPassword: String, confirmNewPassword: String) {
@@ -131,7 +168,7 @@ class OtpActivity : AppCompatActivity() {
     private fun handleErrorResponse(code: Int) {
         when (code) {
             404 -> {
-                Toast .makeText(this, "Account not found", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Account not found", Toast.LENGTH_SHORT).show()
             }
             401 -> {
                 Toast.makeText(this, "Invalid email or OTP", Toast.LENGTH_SHORT).show()

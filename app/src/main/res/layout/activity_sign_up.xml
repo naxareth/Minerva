@@ -10,21 +10,22 @@
     tools:context=".views.SignUpActivity">
 
 
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="236dp"
         android:layout_height="64dp"
         android:fontFamily="@font/bebas"
-        android:text="MINERVA"
         android:gravity="center"
+        android:text="MINERVA"
         android:textAlignment="center"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.139" />
+        app:layout_constraintVertical_bias="0.119" />
 
     <TextView
         android:id="@+id/tvDesc"
@@ -37,7 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.221" />
+        app:layout_constraintVertical_bias="0.311" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilSignEmail"
@@ -59,6 +60,16 @@
             android:fontFamily="@font/oswald"
             android:hint="Email:"
             android:inputType="textEmailAddress" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSignPass"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:ems="10"
+            android:fontFamily="@font/oswald"
+            android:hint="Password:"
+            android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -96,16 +107,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.569"
         app:passwordToggleEnabled="true">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etSignPass"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/transparent"
-            android:ems="10"
-            android:fontFamily="@font/oswald"
-            android:hint="Password:"
-            android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
