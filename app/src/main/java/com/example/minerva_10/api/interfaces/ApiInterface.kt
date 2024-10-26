@@ -1,14 +1,18 @@
 package com.example.minerva_10.api.interfaces
 
+import com.example.minerva_10.api.responses.ChangePasswordRequest
+import com.example.minerva_10.api.responses.ChangePasswordResponse
 import com.example.minerva_10.api.responses.Favorite
 import com.example.minerva_10.api.responses.FavoriteResource
 import com.example.minerva_10.api.responses.FavoriteResponse
 import com.example.minerva_10.api.responses.LoginRequest
 import com.example.minerva_10.api.responses.LoginResponse
 import com.example.minerva_10.api.responses.LogoutResponse
+import com.example.minerva_10.api.responses.OtpRequest
 import com.example.minerva_10.api.responses.ProfileResponse
 import com.example.minerva_10.api.responses.RegisterRequest
 import com.example.minerva_10.api.responses.RegisterResponse
+import com.example.minerva_10.api.responses.VerifyOtpRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -29,6 +33,15 @@ interface ApiInterface {
 
     @POST("logout")
     fun logout(@Header("Authorization") token: String): Call<LogoutResponse>
+
+    @POST("password-recovery/send-otp")
+    fun sendOtp(@Body otpRequest: OtpRequest): Call<Void>
+
+    @POST("password-recovery/verify-otp")
+    fun verifyOtp(@Body verifyOtpRequest: VerifyOtpRequest): Call<Void>
+
+    @POST("password-recovery/change-password")
+    fun changePassword(@Body changePasswordRequest: ChangePasswordRequest): Call<ChangePasswordResponse>
 
     @GET("profile")
     fun profile(@Header("Authorization") token: String): Call<ProfileResponse>
