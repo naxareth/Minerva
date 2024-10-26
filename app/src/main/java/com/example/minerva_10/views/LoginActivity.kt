@@ -20,6 +20,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etPassword: EditText
     private lateinit var btLogin: Button
     private lateinit var btSignUp: Button
+    private lateinit var btForgotPassword: Button // Declare the button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
             etPassword = findViewById(R.id.etPassword)
             btLogin = findViewById(R.id.btLogin)
             btSignUp = findViewById(R.id.btSignUpNow)
+            btForgotPassword = findViewById(R.id.forgotPassword) // Initialize the button
 
             btLogin.setOnClickListener {
                 val email = etEmail.text.toString()
@@ -54,6 +56,12 @@ class LoginActivity : AppCompatActivity() {
 
             btSignUp.setOnClickListener {
                 val intent = Intent(this, SignUpActivity::class.java)
+                startActivity(intent)
+            }
+
+            // Set up the forgot password button click listener
+            btForgotPassword.setOnClickListener {
+                val intent = Intent(this, OtpActivity::class.java) // Navigate to OtpActivity
                 startActivity(intent)
             }
         }
@@ -92,8 +100,6 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
-
-
 
     private fun handleErrorResponse(code: Int) {
         when (code) {

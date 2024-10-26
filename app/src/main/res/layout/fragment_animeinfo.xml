@@ -19,7 +19,9 @@
             android:textSize="22sp"
             android:textStyle="bold"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
             />
 
         <!-- Anime information container -->
@@ -78,86 +80,102 @@
                 app:cardCornerRadius="8dp"
                 android:layout_margin="10dp"
                 android:elevation="10dp">
-            <!--
-            <Button
-                android:id="@+id/play_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/arrow_right"
-                android:text="Play"
-                android:background="@color/transparent"
-                android:layout_gravity="center"
-                android:layout_marginTop="30dp"/> -->
 
-            <TextView
-                android:id="@+id/anime_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginBottom="10dp"
-                android:textColor="#F6306B"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+                        <Button
+                            android:id="@+id/play_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/play_arrow_24px"
+                            android:text="Play"
+                            android:backgroundTint="@color/limegreen"
+                            app:cardCornerRadius="8dp"
+                            android:paddingHorizontal="135dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/oswald"
+                            />
 
-            <!-- Anime Genres -->
+                        <ToggleButton
+                            android:id="@+id/add_to_favorites_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/favorite_icon_state_list"
+                            android:drawablePadding="0dp"
+                            android:paddingHorizontal="110dp"
+                            android:text="Add To Favorites"
+                            android:textOff=" Add To Favorites"
+                            android:textOn=" Added to Favorites"
+                            android:backgroundTint="@color/pinkRed"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginBottom="5dp"
+                            app:cardCornerRadius="8dp"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/oswald"
+                            android:textColor="@color/white"/>
 
-            <TextView
-                android:id="@+id/anime_genres"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:layout_marginTop="50dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginBottom="10dp"
-               />
+                            <TextView
+                            android:id="@+id/anime_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                                android:fontFamily="@font/oswald"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:textColor="#F6306B"/>
+
+                            <!-- Anime Genres -->
+
+                            <TextView
+                                android:id="@+id/anime_genres"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="20sp"
+                                android:fontFamily="@font/oswald"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginBottom="10dp"
+                               />
+
+                </LinearLayout>
+
             </androidx.cardview.widget.CardView>
 
-            <!-- Anime URL
-            <TextView
-                android:id="@+id/anime_url"
+
+
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp" />-->
+                android:layout_height="match_parent"
+                app:cardCornerRadius="8dp"
+                android:layout_margin="10dp"
+                android:elevation="10dp">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <!-- Anime Release Date -->
-            <TextView
-                android:id="@+id/anime_release_date_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Release Date:"
-                android:fontFamily="@font/oswald"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"/>
-            <TextView
-                android:id="@+id/anime_release_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textColor="#F6306B"/>
+                    <!-- Anime Description -->
 
-            <!-- Anime Description -->
-            <TextView
-                android:id="@+id/anime_description_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Description:"
-                android:fontFamily="@font/oswald"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"/>
-            <TextView
-                android:id="@+id/anime_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textColor="#F6306B"/>
-
-
+                    <TextView
+                        android:id="@+id/anime_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/oswald"
+                        android:textColor="#F6306B"
+                        android:layout_margin="10dp"/>
 
             <!-- Anime Sub or Dub
             <TextView
@@ -174,39 +192,52 @@
                 android:textSize="20sp"
                 android:layout_marginTop="20dp"/>-->
 
-            <!-- Anime Type -->
-            <TextView
-                android:id="@+id/anime_type_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Type:"
-                android:textSize="20sp"
-                android:fontFamily="@font/oswald"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"/>
             <TextView
                 android:id="@+id/anime_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
+                android:fontFamily="@font/oswald"
+                android:layout_margin="10dp"
                 android:textColor="#F6306B"/>
 
-            <!-- Anime Status -->
-            <TextView
-                android:id="@+id/anime_status_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Status:"
-                android:fontFamily="@font/oswald"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"/>
-            <TextView
-                android:id="@+id/anime_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textColor="#F6306B"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:id="@+id/anime_release_date_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Release Date:"
+                            android:fontFamily="@font/oswald"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:layout_marginEnd="4dp"/> <!-- Space between label and text -->
+
+                        <TextView
+                            android:id="@+id/anime_release_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:fontFamily="@font/oswald"
+                            android:layout_marginEnd="20dp"/> <!-- Margin for spacing -->
+
+                        <TextView
+                            android:id="@+id/anime_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:fontFamily="@font/oswald"/>
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
 
             <!-- Anime Other Name
             <TextView
@@ -221,17 +252,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp" />-->
-            <ToggleButton
-                android:id="@+id/add_to_favorites_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:drawableLeft="@drawable/favorite_icon_state_list"
-                android:text="Add To Favorites"
-                android:textOff=" + Add To Favorites"
-                android:textOn=" Added to Favorites"
-                android:background="@color/transparent"
-                android:layout_marginTop="10dp"
-                android:textColor="#F6306B"/>
+
 
 
         </LinearLayout>
@@ -242,7 +263,10 @@
             android:text="EPISODES:"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginTop="20dp"/>
+            android:fontFamily="@font/oswald"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"/>
 
 
         <!-- Episode list container -->

@@ -70,6 +70,11 @@ class AnimeInfoFragment : Fragment() {
         Log.d("AnimeInfoFragment", "Anime ID: $animeId") // Log the anime ID
         fetchAnimeInfo(animeId ?: "")
 
+        // Set click listener for the Play button
+        binding.playButton.setOnClickListener {
+            playFirstEpisode() // Call the method to play the first episode
+        }
+
         binding.addToFavoritesButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 addAnimeToFavorites(animeId ?: "")
@@ -109,7 +114,7 @@ class AnimeInfoFragment : Fragment() {
                             if (response.isSuccessful) {
                                 Log.d("Favorite", "Added to favorites")
                             } else {
-                                Log.e("Favorite", "Error adding to favorites: ${response.code()}")
+                                Log.e(" Favorite", "Error adding to favorites: ${response.code()}")
                             }
                         }
 
@@ -203,7 +208,6 @@ class AnimeInfoFragment : Fragment() {
 
         // Update the anime description
         binding.animeDescription.text = animeInfo.description
-        binding.animeDescriptionLabel.text = "Description:"
 
         // Update the anime genres
         binding.animeGenres.text = animeInfo.genres.joinToString(", ")
@@ -214,11 +218,9 @@ class AnimeInfoFragment : Fragment() {
 
         // Update the anime type
         binding.animeType.text = animeInfo.type
-        binding.animeTypeLabel.text = "Type:"
 
         // Update the anime status
         binding.animeStatus.text = animeInfo.status
-        binding.animeStatusLabel.text = "Status:"
 
         // Update the anime other name
         //binding.animeOtherName.text = animeInfo.otherName
@@ -232,6 +234,24 @@ class AnimeInfoFragment : Fragment() {
             putExtra("ANIME_INFO", animeInfo) // Pass the anime info object
         }
         startActivity(intent)
+    }
+
+    private fun playFirstEpisode() {
+        // Check if animeInfo has episodes
+        if (animeInfo.episodes.isNotEmpty()) {
+            // Get the first episode
+            val firstEpisode = animeInfo.episodes[0]
+
+            // Start VideoPlayerActivity and pass the episode and anime info
+            val intent = Intent(context, VideoPlayerActivity::class.java).apply {
+                putExtra("EPISODE_INFO", firstEpisode) // Pass the first episode object
+                putExtra("ANIME_INFO", animeInfo) // Pass the anime info object
+            }
+            startActivity(intent)
+        } else {
+            // Handle the case where there are no episodes
+            Log.e("AnimeInfoFragment", "No episodes available for this anime.")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

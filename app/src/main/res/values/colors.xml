@@ -9,6 +9,7 @@
     <color name="colorBlack">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="pinkRed">#F6306B</color>
+    <color name="limegreen">#028a0f</color>
     <color name="transparent">#00000000</color> <!-- Fully transparent -->
     <color name="colorPrimary">#F6306B</color>
     <color name="colorGrey">#808080</color>
