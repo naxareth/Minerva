@@ -11,18 +11,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
+        <Button
+            android:id="@+id/backButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ANIME DETAILS"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:drawableLeft="@drawable/arrow_back_ios_24px"
+            android:gravity="center"
             android:fontFamily="@font/bebas"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            />
+            android:text="ANIME DETAILS"
+            android:textAlignment="center"
+            android:textColor="@color/pinkRed"
+            android:textSize="20sp"/>
 
         <!-- Anime information container -->
         <LinearLayout

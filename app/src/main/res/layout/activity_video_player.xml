@@ -10,7 +10,6 @@
     tools:context=".views.VideoPlayerActivity">
 
 
-
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/player_view"
         android:layout_width="match_parent"
@@ -21,6 +20,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:drawableLeft="@drawable/arrow_back_white"
+        android:fontFamily="@font/bebas"
+        android:gravity="center"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/anime_title"
         android:layout_width="wrap_content"
@@ -28,9 +39,9 @@
         android:paddingStart="10dp"
         android:text="adsasfasfsdfsdfsd"
         android:textColor="@android:color/white"
-        android:layout_margin="15dp"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toEndOf="@+id/backButton"
         app:layout_constraintTop_toTopOf="parent" />
 
 
