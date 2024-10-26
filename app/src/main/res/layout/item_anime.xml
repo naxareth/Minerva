@@ -1,20 +1,25 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:padding="8dp">
 
 
-
-    <!-- Anime Thumbnail Image -->
-    <ImageView
-        android:id="@+id/animeThumbnail"
-        android:layout_width="130dp"
-        android:layout_height="160dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="Anime Thumbnail"
-        android:scaleType="centerCrop" />
+    <androidx.cardview.widget.CardView
+        android:layout_width="129dp"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        app:cardCornerRadius="8dp">
+        <!-- Anime Thumbnail Image -->
+        <ImageView
+            android:id="@+id/animeThumbnail"
+            android:layout_width="130dp"
+            android:layout_height="160dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="Anime Thumbnail"
+            android:scaleType="centerCrop" />
+    </androidx.cardview.widget.CardView>
 
     <!-- Container for Text (Title, Release Date, Sub/Dub) -->
     <LinearLayout
@@ -28,8 +33,10 @@
             android:id="@+id/animeTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sample Title"
-            android:textSize="16sp"
+            android:fontFamily="@font/bebas"
+            android:layout_margin="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:textColor="@color/colorPrimary" />
 
         <!-- Release Date -->
@@ -37,18 +44,18 @@
             android:id="@+id/releaseDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Release Date: Unknown"
-            android:textSize="14sp"
-            android:textColor="@color/colorPrimary" />
+            android:layout_marginLeft="10dp"
+            android:fontFamily="@font/bebas"
+            android:textSize="16sp" />
 
         <!-- Sub or Dub -->
         <TextView
             android:id="@+id/subOrDub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Type: Sub"
-            android:textSize="14sp"
-            android:textColor="@color/colorPrimary" />
+            android:fontFamily="@font/bebas"
+            android:layout_marginLeft="10dp"
+            android:textSize="16sp" />
 
 
     </LinearLayout>

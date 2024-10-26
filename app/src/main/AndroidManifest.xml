@@ -18,11 +18,13 @@
         android:theme="@style/Theme.Minerva_10"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".views.OtpActivity"
             android:exported="false" />
         <activity
             android:name=".views.VideoPlayerActivity"
+            android:theme="@style/Theme.FullScreen"
             android:configChanges="orientation|screenSize"
             android:exported="false" />
         <activity
@@ -40,10 +42,11 @@
         <activity
             android:name=".views.SplashActivity"
             android:exported="true"
+            android:theme="@style/Theme.FullScreen"
+            android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -52,5 +55,4 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
-
 </manifest>

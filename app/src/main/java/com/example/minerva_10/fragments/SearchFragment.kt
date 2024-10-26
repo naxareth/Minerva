@@ -7,25 +7,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minerva_10.R
-import com.example.minerva_10.adapter.AnimeAdapter2
+import com.example.minerva_10.adapter.SearchAdapter
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.SearchResult
-import com.example.minerva_10.views.SharedViewModel
 import kotlinx.coroutines.launch
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var animeAdapter: AnimeAdapter2
+    private lateinit var animeAdapter: SearchAdapter
     private lateinit var searchEditText: EditText
     private var animeList: MutableList<SearchResult> = mutableListOf()
+    private var recommendedAnimeList: MutableList<SearchResult> = mutableListOf() // New list for recommended animes
 
     private var currentPage = 1
     private var hasNextPage = true
@@ -41,7 +39,9 @@ class SearchFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recommendedAnimeRecyclerView)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
-        animeAdapter = AnimeAdapter2(animeList)
+
+        // Create the adapter and set the listener
+        animeAdapter = SearchAdapter(animeList, this)
         recyclerView.adapter = animeAdapter
 
         setupSearch()
@@ -77,6 +77,11 @@ class SearchFragment : Fragment() {
                     currentPage = 1
                     animeList.clear()
                     fetchPaginatedSearchResults(query)
+                } else {
+                    // If the query is empty, reset to recommended animes
+                    animeList.clear()
+                    animeList.addAll(recommendedAnimeList) // Reset to recommended animes
+                    animeAdapter.notifyDataSetChanged()
                 }
             }
             override fun afterTextChanged(s: Editable?) {}
@@ -87,7 +92,7 @@ class SearchFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val topAiringResults = RetrofitClient.animeApiService.getTopAiringAnimes(currentPage)
-                val recommendedAnimeList = topAiringResults.results.map {
+                recommendedAnimeList = topAiringResults.results.map {
                     SearchResult(
                         id = it.id,
                         title = it.title,
@@ -95,7 +100,7 @@ class SearchFragment : Fragment() {
                         releaseDate = it.releaseDate ?: "Unknown",
                         subOrDub = it.subOrDub ?: "Unknown"
                     )
-                }
+                }.toMutableList() // Store in the new list
                 animeList.addAll(recommendedAnimeList)
                 animeAdapter.notifyDataSetChanged()
             } catch (e: Exception) {
@@ -128,5 +133,20 @@ class SearchFragment : Fragment() {
             }
         }
     }
-}
 
+    // Handle the click event
+    override fun onItemClick(anime: SearchResult) {
+        // Create a new instance of AnimeInfoFragment
+        val animeInfoFragment = AnimeInfoFragment()
+        val bundle = Bundle().apply {
+            putString("anime_id", anime.id.toString()) // Pass the anime ID
+        }
+        animeInfoFragment.arguments = bundle
+
+        // Replace the current fragment with AnimeInfoFragment
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, animeInfoFragment) // Use the correct container ID
+            .addToBackStack(null)
+            .commit()
+    }
+}

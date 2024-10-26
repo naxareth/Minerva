@@ -50,10 +50,12 @@ class VideoPlayerActivity : AppCompatActivity() {
     private var availableQualities: List<String> = emptyList()
     private lateinit var downloadButton: Button
     private lateinit var animeInfo: AnimeInfo
+    private lateinit var backButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_player)
+
 
         checkNotificationPermission() // Check for notification permissions
         createNotificationChannel() // Create notification channel
@@ -82,6 +84,8 @@ class VideoPlayerActivity : AppCompatActivity() {
             qualitySpinner.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
             downloadButton.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
             animeTitleTextView.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
+            backButton.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
+
         }
 
         fetchStreamingLinks(episodeInfo.id)
@@ -104,6 +108,12 @@ class VideoPlayerActivity : AppCompatActivity() {
             Log.d("VideoPlayerActivity", "Download button clicked, adding download item to Shared ViewModel: $downloadItem")
             fetchM3U8AndDownload(episodeInfo.id, selectedQuality, filePath)
         }
+    }
+
+    override fun onBackPressed() {
+        // Instead of finishing the activity, navigate back to the AnimeInfoFragment
+        super.onBackPressed()
+        // Optionally, you can add any specific logic here if needed
     }
 
     private fun checkNotificationPermission() {

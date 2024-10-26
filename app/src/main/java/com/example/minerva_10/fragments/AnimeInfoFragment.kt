@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -39,6 +40,7 @@ class AnimeInfoFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private var animeId: String? = null
     private lateinit var animeInfo: AnimeInfo // Store the AnimeInfo object
+    private lateinit var backButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,6 +67,12 @@ class AnimeInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        backButton = binding.backButton // Initialize the back button
+        backButton.setOnClickListener {
+            // Navigate back to HomeFragment
+            requireActivity().supportFragmentManager.popBackStack()
+        }
 
         animeId = arguments?.getString("anime_id")
         Log.d("AnimeInfoFragment", "Anime ID: $animeId") // Log the anime ID
