@@ -26,8 +26,8 @@ class OtpActivity : AppCompatActivity() {
     private lateinit var etConfirmNewPassword: EditText
     private lateinit var btSendOtp: Button
     private lateinit var btChangePassword: Button
-    private lateinit var tvCooldown: TextView // TextView to display cooldown timer
-    private lateinit var backButton: Button // Add this line
+    private lateinit var tvCooldown: TextView
+    private lateinit var backButton: Button
 
     private var countdownTimer: CountDownTimer? = null
     private var isCooldown = false
@@ -42,12 +42,11 @@ class OtpActivity : AppCompatActivity() {
         etConfirmNewPassword = findViewById(R.id.etConfirmNewPassword)
         btSendOtp = findViewById(R.id.btSendOtp)
         btChangePassword = findViewById(R.id.btChangePassword)
-        tvCooldown = findViewById(R.id.tvCooldown) // Initialize the TextView
-        backButton = findViewById(R.id.backButton) // Initialize the back button
+        tvCooldown = findViewById(R.id.tvCooldown)
+        backButton = findViewById(R.id.backButton)
 
-        // Set OnClickListener for the back button
         backButton.setOnClickListener {
-            finish() // Close the current activity
+            finish()
         }
 
         btSendOtp.setOnClickListener {
@@ -73,8 +72,7 @@ class OtpActivity : AppCompatActivity() {
             val newPassword = etNewPassword.text.toString()
             val confirmNewPassword = etConfirmNewPassword.text.toString()
 
-            if (email.isEmpty() || otp.isEmpty() || newPassword.isEmpty() || confirmNewPassword.isEmpty()) {
-                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
+            if (!isValidOtpInput(email, otp, newPassword)) {
                 return@setOnClickListener
             }
 
@@ -87,12 +85,13 @@ class OtpActivity : AppCompatActivity() {
             verifyOtp(verifyOtpRequest, newPassword, confirmNewPassword)
         }
     }
+
     private fun sendOtp(otpRequest: OtpRequest) {
         RetrofitClient.api.sendOtp(otpRequest).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(this@OtpActivity, "OTP sent successfully", Toast.LENGTH_SHORT).show()
-                    startCooldown() // Start the cooldown timer
+                    startCooldown()
                 } else {
                     handleErrorResponse(response.code())
                 }
@@ -106,18 +105,18 @@ class OtpActivity : AppCompatActivity() {
 
     private fun startCooldown() {
         isCooldown = true
-        btSendOtp.isEnabled = false // Disable the button
-        countdownTimer = object : CountDownTimer(60000, 1000) { // 1 minute cooldown
+        btSendOtp.isEnabled = false
+        countdownTimer = object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                val seconds = ( millisUntilFinished / 1000) % 60
+                val seconds = (millisUntilFinished / 1000) % 60
                 val minutes = (millisUntilFinished / 1000) / 60
-                tvCooldown.text = String.format("%02d:%02d", minutes, seconds) // Format the string as "00:00"
+                tvCooldown.text = String.format("%02d:%02d", minutes, seconds)
             }
 
             override fun onFinish() {
                 isCooldown = false
-                btSendOtp.isEnabled = true // Re-enable the button
-                tvCooldown.text = "" // Clear the cooldown text
+                btSendOtp.isEnabled = true
+                tvCooldown.text = ""
             }
         }.start()
     }
@@ -163,6 +162,28 @@ class OtpActivity : AppCompatActivity() {
                 handleFailureError(t)
             }
         })
+    }
+
+    private fun isValidOtpInput(email: String, otp: String, newPassword: String): Boolean {
+        val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
+        val passwordRegex = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]*$".toRegex() // Allow specific special characters
+
+        if (email.isEmpty() || otp.isEmpty() || newPassword.isEmpty() || etConfirmNewPassword.text.toString().isEmpty()) {
+            Toast.makeText(this, "Fields cannot be empty or contain only spaces", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (!emailRegex.matches(email)) {
+            Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (!passwordRegex.matches(newPassword)) {
+            Toast.makeText(this, "Password can only contain letters, numbers, and specific special characters", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
     }
 
     private fun handleErrorResponse(code: Int) {

@@ -20,7 +20,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etPassword: EditText
     private lateinit var btLogin: Button
     private lateinit var btSignUp: Button
-    private lateinit var btForgotPassword: Button // Declare the button
+    private lateinit var btForgotPassword: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,14 +39,13 @@ class LoginActivity : AppCompatActivity() {
             etPassword = findViewById(R.id.etPassword)
             btLogin = findViewById(R.id.btLogin)
             btSignUp = findViewById(R.id.btSignUpNow)
-            btForgotPassword = findViewById(R.id.forgotPassword) // Initialize the button
+            btForgotPassword = findViewById(R.id.forgotPassword)
 
             btLogin.setOnClickListener {
                 val email = etEmail.text.toString()
                 val password = etPassword.text.toString()
 
-                if (email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
+                if (!isValidLoginInput(email, password)) {
                     return@setOnClickListener
                 }
 
@@ -59,9 +58,8 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-            // Set up the forgot password button click listener
             btForgotPassword.setOnClickListener {
-                val intent = Intent(this, OtpActivity::class.java) // Navigate to OtpActivity
+                val intent = Intent(this, OtpActivity::class.java)
                 startActivity(intent)
             }
         }
@@ -73,15 +71,14 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
                     val token = loginResponse?.token
-                    val userId = loginResponse?.userId // Ensure this is part of the response
+                    val userId = loginResponse?.userId
                     val message = loginResponse?.message
 
                     if (token != null && message != null && userId != null) {
-                        // Store the token and user ID securely
                         val sharedPreferences = getSharedPreferences("token_prefs", MODE_PRIVATE)
                         val editor = sharedPreferences.edit()
                         editor.putString("token", token)
-                        editor.putInt("user_id", userId) // Store user ID correctly
+                        editor.putInt("user_id", userId)
                         editor.apply()
 
                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
@@ -99,6 +96,28 @@ class LoginActivity : AppCompatActivity() {
                 handleFailureError(t)
             }
         })
+    }
+
+    private fun isValidLoginInput(email: String, password: String): Boolean {
+        val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
+        val passwordRegex = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]*$".toRegex() // Allow specific special characters
+
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Fields cannot be empty or contain only spaces", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (!emailRegex.matches(email)) {
+            Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (!passwordRegex.matches(password)) {
+            Toast.makeText(this, "Password can only contain letters, numbers, and specific special characters", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
     }
 
     private fun handleErrorResponse(code: Int) {

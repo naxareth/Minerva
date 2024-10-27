@@ -10,13 +10,31 @@
     tools:context=".views.SignUpActivity">
 
 
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:drawableLeft="@drawable/arrow_back_ios_24px"
+        android:gravity="center"
+        android:text="Back"
+        android:textAlignment="center"
+        android:textColor="@color/pinkRed"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.052"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.046" />
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="236dp"
         android:layout_height="64dp"
         android:fontFamily="@font/bebas"
-        android:text="MINERVA"
         android:gravity="center"
+        android:text="MINERVA"
         android:textAlignment="center"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -24,7 +42,7 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.139" />
+        app:layout_constraintVertical_bias="0.192" />
 
     <TextView
         android:id="@+id/tvDesc"
@@ -37,7 +55,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.221" />
+        app:layout_constraintVertical_bias="0.258" />
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilSignEmail"

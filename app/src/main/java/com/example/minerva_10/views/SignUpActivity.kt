@@ -21,6 +21,7 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var etSignPass: EditText
     private lateinit var etConfirmPassword: EditText
     private lateinit var btSignRegister: Button
+    private lateinit var backButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +32,11 @@ class SignUpActivity : AppCompatActivity() {
         etSignPass = findViewById(R.id.etSignPass)
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
         btSignRegister = findViewById(R.id.btSignRegister)
+        backButton = findViewById(R.id.backButton)
+
+        backButton.setOnClickListener {
+            finish()
+        }
 
         btSignRegister.setOnClickListener {
             val email = etSignEmail.text.toString()
@@ -38,13 +44,7 @@ class SignUpActivity : AppCompatActivity() {
             val password = etSignPass.text.toString()
             val confirmPassword = etConfirmPassword.text.toString()
 
-            if (email.isEmpty() || name.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (password.length < 8) {
-                Toast.makeText(this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show()
+            if (!isValidInput(email, password) || name.isEmpty() || confirmPassword.isEmpty()) {
                 return@setOnClickListener
             }
 
@@ -61,7 +61,6 @@ class SignUpActivity : AppCompatActivity() {
                         val token = registerResponse?.token
                         val message = registerResponse?.message
 
-                        // Store the token in shared preferences
                         val sharedPreferences = getSharedPreferences("user_data", MODE_PRIVATE)
                         val editor = sharedPreferences.edit()
                         editor.putString("token", token)
@@ -69,7 +68,6 @@ class SignUpActivity : AppCompatActivity() {
 
                         Toast.makeText(this@SignUpActivity, "Register successful: $message", Toast.LENGTH_SHORT).show()
 
-                        // Navigate back to LoginActivity
                         val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
                         startActivity(intent)
                         finish()
@@ -93,10 +91,31 @@ class SignUpActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                    // Handle the error
                     Toast.makeText(this@SignUpActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
         }
+    }
+
+    private fun isValidInput(email: String, password: String): Boolean {
+        val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
+        val passwordRegex = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]*$".toRegex() // Allow specific special characters
+
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Fields cannot be empty or contain only spaces", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (!emailRegex.matches(email)) {
+            Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (!passwordRegex.matches(password)) {
+            Toast.makeText(this, "Password can only contain letters, numbers, and specific special characters", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
     }
 }
