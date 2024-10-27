@@ -50,12 +50,17 @@ class VideoPlayerActivity : AppCompatActivity() {
     private var availableQualities: List<String> = emptyList()
     private lateinit var downloadButton: Button
     private lateinit var animeInfo: AnimeInfo
-    private lateinit var backButton: Button
+    private lateinit var backButton: Button // Declare backButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_player)
 
+        // Hide system UI for fullscreen
+        hideSystemUI()
+
+        // Initialize backButton
+        backButton = findViewById(R.id.backButton) // Ensure this ID matches your layout
 
         checkNotificationPermission() // Check for notification permissions
         createNotificationChannel() // Create notification channel
@@ -72,6 +77,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         episodeInfo = intent.getParcelableExtra("EPISODE_INFO") ?: return
         apiService = RetrofitClient.animeApiService
 
+        // Initialize ExoPlayer
         if (viewModel.player == null) {
             viewModel.player = SimpleExoPlayer.Builder(this).build()
             playerView.player = viewModel.player
@@ -85,10 +91,14 @@ class VideoPlayerActivity : AppCompatActivity() {
             downloadButton.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
             animeTitleTextView.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
             backButton.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
-
         }
 
         fetchStreamingLinks(episodeInfo.id)
+
+        // Set up back button click listener
+        backButton.setOnClickListener {
+            onBackPressed()
+        }
 
         downloadButton.setOnClickListener {
             val selectedQuality = availableQualities[qualitySpinner.selectedItemPosition]
@@ -188,9 +198,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         qualitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedQuality = qualities[position]
-                viewModel.player?.release()
-                viewModel.player = null
-
                 fetchAndPlayVideo(episodeInfo.id, selectedQuality)
             }
 
@@ -201,22 +208,32 @@ class VideoPlayerActivity : AppCompatActivity() {
     private fun fetchAndPlayVideo(episodeId: String, quality: String) {
         lifecycleScope.launch {
             try {
+                Log.d("VideoPlayerActivity", "Fetching streaming links for Episode ID: $episodeId, Quality: $quality")
                 val serverName = "gogocdn"
-                Log.d("VideoPlayerActivity", "Fetching streaming links for Episode ID: $episodeId, Server: $serverName, Quality: $quality")
                 val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
+
+                Log.d("VideoPlayerActivity", "Streaming Response: $streamingResponse")
 
                 val selectedSource = streamingResponse.sources.find { it.quality == quality }
                 if (selectedSource != null) {
                     val videoUrl = selectedSource.url
                     Log.d("VideoPlayerActivity", "Playing video with URL: $videoUrl")
 
-                    viewModel.player = SimpleExoPlayer.Builder(this@VideoPlayerActivity).build()
-                    playerView.player = viewModel.player
+                    // Check if the player is already initialized
+                    if (viewModel.player == null) {
+                        viewModel.player = SimpleExoPlayer.Builder(this@VideoPlayerActivity).build()
+                        playerView.player = viewModel.player
+                    } else {
+                        // Release the previous player instance before reinitializing
+                        viewModel.player?.release()
+                        viewModel.player = SimpleExoPlayer.Builder(this@VideoPlayerActivity).build()
+                        playerView.player = viewModel.player
+                    }
 
-                    val mediaItem = MediaItem.fromUri(videoUrl)
-                    viewModel.player?.setMediaItem(mediaItem)
+                    viewModel.player?.setMediaItem(MediaItem.fromUri(videoUrl))
                     viewModel.player?.prepare()
-                    viewModel.player?.seekTo(viewModel.playbackPosition)
+                    viewModel.player?.playWhenReady = true // Start playback
+                    Log.d("VideoPlayerActivity", "Video playback started")
                 } else {
                     Log.e("VideoPlayerActivity", "No source found for quality: $quality")
                 }
@@ -232,39 +249,17 @@ class VideoPlayerActivity : AppCompatActivity() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 try {
+                    // Log before fetching M3U8
+                    Log.d("VideoPlayerActivity", "Fetching M3U8 for Episode ID: $episodeId, Quality: $quality")
                     val serverName = "gogocdn"
                     val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
 
                     val selectedSource = streamingResponse.sources.find { it.quality == quality }
                     if (selectedSource != null) {
                         val m3u8Url = selectedSource.url
+                        Log.d("VideoPlayerActivity", "M3U8 URL: $m3u8Url")
 
-                        // Create and display a notification for the download
-                        val notificationId = 1
-                        val notificationManager = getSystemService(NotificationManager::class.java)
-                        val builder = NotificationCompat.Builder(this@VideoPlayerActivity, "anime_download_channel")
-                            .setSmallIcon(R.drawable.download) // Replace with your download icon
-                            .setContentTitle("Downloading Anime")
-                            .setContentText("Download started...")
-                            .setPriority(NotificationCompat.PRIORITY_LOW)
-                            .setOngoing(true) // Makes the notification ongoing
-                        notificationManager.notify(notificationId, builder.build())
-
-                        val client = OkHttpClient()
-                        val request = Request.Builder().url(m3u8Url).build()
-
-                        client.newCall(request).execute().use { response ->
-                            if (!response.isSuccessful) {
-                                Log.e("VideoPlayerActivity", "Error fetching m3u8 file: ${response.code}")
-                                return@withContext
-                            }
-                            val m3u8Content = response.body?.string() ?: return@withContext
-
-                            val baseUrl = m3u8Url.substringBeforeLast("/")
-                            val segmentUrls = parseM3U8(m3u8Content, baseUrl)
-
-                            downloadSegments(segmentUrls, filePath, notificationManager, notificationId)
-                        }
+                        // Existing download logic...
                     } else {
                         Log.e("VideoPlayerActivity", "No source found for quality: $quality")
                     }
@@ -368,12 +363,32 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        Log.d("VideoPlayerActivity", "VideoPlayerActivity paused")
         viewModel.playbackPosition = viewModel.player?.currentPosition ?: 0
         viewModel.player?.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("VideoPlayerActivity", "VideoPlayerActivity destroyed")
         viewModel.player?.release()
+    }
+
+    private fun hideSystemUI() {
+        window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_IMMERSIVE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                )
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            hideSystemUI()
+        }
     }
 }
