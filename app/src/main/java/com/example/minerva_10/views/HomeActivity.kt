@@ -8,7 +8,6 @@ import com.example.minerva_10.fragments.HomeFragment
 import com.example.minerva_10.R
 import com.example.minerva_10.fragments.FavoriteFragment
 import com.example.minerva_10.fragments.SearchFragment
-import com.example.minerva_10.fragments.SettingsFragment
 
 class HomeActivity : AppCompatActivity() {
 
@@ -24,17 +23,19 @@ class HomeActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, HomeFragment())
-                .addToBackStack(null)
                 .commit()
         }
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.home -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, HomeFragment())
-                        .addToBackStack(null)
-                        .commit()
+                    // Check if HomeFragment is already displayed
+                    val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+                    if (currentFragment !is HomeFragment) {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, HomeFragment())
+                            .commit()
+                    }
                     true
                 }
                 R.id.search -> {

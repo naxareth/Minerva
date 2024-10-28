@@ -261,17 +261,39 @@ class VideoPlayerActivity : AppCompatActivity() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    // Log before fetching M3U8
-                    Log.d("VideoPlayerActivity", "Fetching M3U8 for Episode ID: $episodeId, Quality: $quality")
                     val serverName = "gogocdn"
                     val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
 
                     val selectedSource = streamingResponse.sources.find { it.quality == quality }
                     if (selectedSource != null) {
                         val m3u8Url = selectedSource.url
-                        Log.d("VideoPlayerActivity", "M3U8 URL: $m3u8Url")
 
-                        // Existing download logic...
+                        // Create and display a notification for the download
+                        val notificationId = 1
+                        val notificationManager = getSystemService(NotificationManager::class.java)
+                        val builder = NotificationCompat.Builder(this@VideoPlayerActivity, "anime_download_channel")
+                            .setSmallIcon(R.drawable.download) // Replace with your download icon
+                            .setContentTitle("Downloading Anime")
+                            .setContentText("Download started...")
+                            .setPriority(NotificationCompat.PRIORITY_LOW)
+                            .setOngoing(true) // Makes the notification ongoing
+                        notificationManager.notify(notificationId, builder.build())
+
+                        val client = OkHttpClient()
+                        val request = Request.Builder().url(m3u8Url).build()
+
+                        client.newCall(request).execute().use { response ->
+                            if (!response.isSuccessful) {
+                                Log.e("VideoPlayerActivity", "Error fetching m3u8 file: ${response.code}")
+                                return@withContext
+                            }
+                            val m3u8Content = response.body?.string() ?: return@withContext
+
+                            val baseUrl = m3u8Url.substringBeforeLast("/")
+                            val segmentUrls = parseM3U8(m3u8Content, baseUrl)
+
+                            downloadSegments(segmentUrls, filePath, notificationManager, notificationId)
+                        }
                     } else {
                         Log.e("VideoPlayerActivity", "No source found for quality: $quality")
                     }

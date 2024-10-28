@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -116,7 +117,7 @@ class HomeFragment : Fragment() {
             }
 
             val parentRecyclerView: RecyclerView = view.findViewById(R.id.parentRecyclerView)
-            parentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+            parentRecyclerView .layoutManager = LinearLayoutManager(requireContext())
 
             // Use Coroutines to fetch data from both endpoints
             lifecycleScope.launch {
@@ -137,6 +138,9 @@ class HomeFragment : Fragment() {
 
                     // Set the adapter for the RecyclerView
                     parentRecyclerView.adapter = AnimeParentAdapter(categories, requireActivity()) { item ->
+                        // Clear the back stack before navigating to AnimeInfoFragment
+                        requireActivity().supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
                         // Create a bundle to pass the anime item
                         val bundle = Bundle()
                         bundle.putString("anime_id", item.id) // Pass the item's ID
@@ -144,7 +148,9 @@ class HomeFragment : Fragment() {
                         // Navigate to the AnimeInfoFragment
                         val animeInfoFragment = AnimeInfoFragment()
                         animeInfoFragment.arguments = bundle
-                        fragmentManager?.beginTransaction()?.replace(R.id.fragment_container, animeInfoFragment)?.commit()
+                        requireActivity().supportFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, animeInfoFragment)
+                            .commit()
                     }
 
                 } catch (e: Exception) {

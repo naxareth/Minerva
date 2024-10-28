@@ -18,15 +18,17 @@
         android:theme="@style/Theme.Minerva_10"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".views.AnimeInfoActivity"
+            android:exported="false" />
         <activity
             android:name=".views.OtpActivity"
             android:exported="false" />
         <activity
             android:name=".views.VideoPlayerActivity"
-            android:theme="@style/Theme.FullScreen"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.FullScreen" />
         <activity
             android:name=".views.HomeActivity"
             android:exported="false"
@@ -41,12 +43,13 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".views.SplashActivity"
-            android:exported="true"
-            android:theme="@style/Theme.FullScreen"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="portrait">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -55,4 +58,5 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
 </manifest>
