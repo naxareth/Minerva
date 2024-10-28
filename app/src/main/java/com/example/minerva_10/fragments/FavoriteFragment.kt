@@ -1,5 +1,6 @@
 package com.example.minerva_10.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import com.example.minerva_10.R
 import com.example.minerva_10.adapter.FavoriteParentAdapter
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.FavoriteResponse
+import com.example.minerva_10.views.AnimeInfoActivity // Import the AnimeInfoActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,14 +31,11 @@ class FavoriteFragment : Fragment() {
         recyclerView.layoutManager = GridLayoutManager(context, 1) // Set column count to 1
 
         adapter = FavoriteParentAdapter(emptyList(), requireActivity()) { favoriteResource ->
-            // Create a bundle to pass the anime item
-            val bundle = Bundle()
-            bundle.putString("anime_id", favoriteResource.anime_id) // Pass the item's ID
-
-            // Navigate to the AnimeInfoFragment
-            val animeInfoFragment = AnimeInfoFragment()
-            animeInfoFragment.arguments = bundle
-            fragmentManager?.beginTransaction()?.replace(R.id.fragment_container, animeInfoFragment)?.commit()
+            // Create an Intent to navigate to the AnimeInfoActivity
+            val intent = Intent(requireContext(), AnimeInfoActivity::class.java).apply {
+                putExtra("anime_id", favoriteResource.anime_id) // Pass the item's ID
+            }
+            startActivity(intent) // Start the AnimeInfoActivity
         }
 
         // Get the token from the previous activity

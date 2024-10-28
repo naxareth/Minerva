@@ -1,4 +1,4 @@
-package com.example.minerva_10.activities
+package com.example.minerva_10.views
 
 import android.content.Intent
 import android.content.SharedPreferences

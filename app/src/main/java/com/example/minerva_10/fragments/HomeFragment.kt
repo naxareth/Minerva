@@ -22,6 +22,7 @@ import com.example.minerva_10.api.responses.ProfileResponse
 import com.example.minerva_10.api.responses.LogoutResponse
 import com.example.minerva_10.views.LoginActivity
 import com.example.minerva_10.views.SharedViewModel
+import com.example.minerva_10.views.AnimeInfoActivity // Import the AnimeInfoActivity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -117,7 +118,7 @@ class HomeFragment : Fragment() {
             }
 
             val parentRecyclerView: RecyclerView = view.findViewById(R.id.parentRecyclerView)
-            parentRecyclerView .layoutManager = LinearLayoutManager(requireContext())
+            parentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
             // Use Coroutines to fetch data from both endpoints
             lifecycleScope.launch {
@@ -138,19 +139,11 @@ class HomeFragment : Fragment() {
 
                     // Set the adapter for the RecyclerView
                     parentRecyclerView.adapter = AnimeParentAdapter(categories, requireActivity()) { item ->
-                        // Clear the back stack before navigating to AnimeInfoFragment
-                        requireActivity().supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-
-                        // Create a bundle to pass the anime item
-                        val bundle = Bundle()
-                        bundle.putString("anime_id", item.id) // Pass the item's ID
-
-                        // Navigate to the AnimeInfoFragment
-                        val animeInfoFragment = AnimeInfoFragment()
-                        animeInfoFragment.arguments = bundle
-                        requireActivity().supportFragmentManager.beginTransaction()
-                            .replace(R.id.fragment_container, animeInfoFragment)
-                            .commit()
+                        // Create an Intent to navigate to AnimeInfoActivity
+                        val intent = Intent(requireContext(), AnimeInfoActivity::class.java).apply {
+                            putExtra("anime_id", item.id) // Pass the item's ID
+                        }
+                        startActivity(intent) // Start the AnimeInfoActivity
                     }
 
                 } catch (e: Exception) {

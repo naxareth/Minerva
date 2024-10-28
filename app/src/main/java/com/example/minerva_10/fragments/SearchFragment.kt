@@ -1,5 +1,6 @@
 package com.example.minerva_10.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,6 +16,7 @@ import com.example.minerva_10.R
 import com.example.minerva_10.adapter.SearchAdapter
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.SearchResult
+import com.example.minerva_10.views.AnimeInfoActivity // Import the AnimeInfoActivity
 import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
@@ -116,7 +118,7 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
         lifecycleScope.launch {
             try {
                 // Call the searchAnime API for search results
-                val searchResults = RetrofitClient.animeApiService.searchAnime(query, currentPage)
+                val searchResults = RetrofitClient.animeApiService .searchAnime(query, currentPage)
 
                 // Add the fetched results to the animeList
                 animeList.addAll(searchResults.results)
@@ -136,17 +138,10 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
 
     // Handle the click event
     override fun onItemClick(anime: SearchResult) {
-        // Create a new instance of AnimeInfoFragment
-        val animeInfoFragment = AnimeInfoFragment()
-        val bundle = Bundle().apply {
-            putString("anime_id", anime.id.toString()) // Pass the anime ID
+        // Create an Intent to navigate to AnimeInfoActivity
+        val intent = Intent(requireContext(), AnimeInfoActivity::class.java).apply {
+            putExtra("anime_id", anime.id.toString()) // Pass the anime ID
         }
-        animeInfoFragment.arguments = bundle
-
-        // Replace the current fragment with AnimeInfoFragment
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, animeInfoFragment) // Use the correct container ID
-            .addToBackStack(null)
-            .commit()
+        startActivity(intent) // Start the AnimeInfoActivity
     }
 }

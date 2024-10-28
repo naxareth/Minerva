@@ -11,7 +11,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.minerva_10.api.responses.FavoriteResource
-import com.example.minerva_10.fragments.AnimeInfoFragment
 
 class FavoriteAdapter : RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
 
