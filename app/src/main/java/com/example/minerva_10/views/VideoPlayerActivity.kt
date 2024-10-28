@@ -1,11 +1,13 @@
 package com.example.minerva_10.views
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
@@ -15,7 +17,9 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.minerva_10.R
 import com.example.minerva_10.api.RetrofitClient
@@ -52,6 +56,8 @@ class VideoPlayerActivity : AppCompatActivity() {
     private lateinit var animeInfo: AnimeInfo
     private lateinit var backButton: Button // Declare backButton
 
+    private val REQUEST_CODE = 1 // Request code for runtime permissions
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_player)
@@ -76,6 +82,11 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         episodeInfo = intent.getParcelableExtra("EPISODE_INFO") ?: return
         apiService = RetrofitClient.animeApiService
+
+        // Request storage permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE)
+        }
 
         // Initialize ExoPlayer
         if (viewModel.player == null) {
@@ -102,7 +113,8 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         downloadButton.setOnClickListener {
             val selectedQuality = availableQualities[qualitySpinner.selectedItemPosition]
-            val filePath = "${externalCacheDir?.absolutePath}/${episodeInfo.number}.mp4"
+            // Change the file path to the Downloads folder
+            val filePath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${animeInfo.title}_${episodeInfo.number}.mp4"
 
             val downloadItem = DownloadItem(
                 animeId = animeInfo.id,
