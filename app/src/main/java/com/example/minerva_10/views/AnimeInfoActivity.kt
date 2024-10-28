@@ -46,10 +46,7 @@ class AnimeInfoActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         animeApiService = RetrofitClient.animeApiService
-
-        episodeAdapter = EpisodeAdapter(emptyList()) { episode ->
-            onEpisodeClicked(episode) // Handle the episode click
-        }
+        episodeAdapter = EpisodeAdapter(emptyList()) { episode -> onEpisodeClicked(episode) }
 
         binding.episodeList.layoutManager = LinearLayoutManager(this)
         binding.episodeList.adapter = episodeAdapter
@@ -59,17 +56,13 @@ class AnimeInfoActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences("favorites_prefs_${token ?: "default"}", MODE_PRIVATE)
 
-        binding.backButton.setOnClickListener {
-            finish() // Navigate back to the previous activity
-        }
+        binding.backButton.setOnClickListener { finish() } // Navigate back to the previous activity
 
         animeId = intent.getStringExtra("anime_id")
         Log.d("AnimeInfoActivity", "Anime ID: $animeId") // Log the anime ID
         fetchAnimeInfo(animeId ?: "")
 
-        binding.playButton.setOnClickListener {
-            playFirstEpisode() // Call the method to play the first episode
-        }
+        binding.playButton.setOnClickListener { playFirstEpisode() } // Call the method to play the first episode
 
         binding.addToFavoritesButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -80,6 +73,20 @@ class AnimeInfoActivity : AppCompatActivity() {
         }
 
         checkIfAnimeIsFavorite(animeId ?: "")
+    }
+
+    private fun playFirstEpisode() {
+        // Check if animeInfo is initialized and has episodes
+        if (this::animeInfo.isInitialized && animeInfo.episodes.isNotEmpty()) {
+            val firstEpisode = animeInfo.episodes[0]
+            val intent = Intent(this, VideoPlayerActivity::class.java).apply {
+                putExtra("EPISODE_INFO", firstEpisode) // Pass the first episode object
+                putExtra("ANIME_INFO", animeInfo) // Pass the anime info object
+            }
+            startActivity(intent)
+        } else {
+            Log.e("AnimeInfoActivity", "No episodes available for this anime.")
+        }
     }
 
     private fun checkIfAnimeIsFavorite(animeId: String) {
@@ -163,11 +170,6 @@ class AnimeInfoActivity : AppCompatActivity() {
                 // Store the animeInfo for later use
                 this@AnimeInfoActivity.animeInfo = animeInfo // Store the animeInfo
 
-                // Log each episode's ID and number
-                animeInfo.episodes.forEach { episode ->
-                    Log.d("Fetch Data", "Episode ID: ${episode.id}, Number: ${episode.number}, URL: ${episode.url}")
-                }
-
                 withContext(Dispatchers.Main) {
                     // Update the UI with the anime information
                     updateAnimeInfoUI(animeInfo)
@@ -227,23 +229,5 @@ class AnimeInfoActivity : AppCompatActivity() {
             putExtra("ANIME_INFO", animeInfo) // Pass the anime info object
         }
         startActivity(intent)
-    }
-
-    private fun playFirstEpisode() {
-        // Check if animeInfo has episodes
-        if (animeInfo.episodes.isNotEmpty()) {
-            // Get the first episode
-            val firstEpisode = animeInfo.episodes[0]
-
-            // Start VideoPlayerActivity and pass the episode and anime info
-            val intent = Intent(this, VideoPlayerActivity::class.java).apply {
-                putExtra("EP ISODE_INFO", firstEpisode) // Pass the first episode object
-                putExtra("ANIME_INFO", animeInfo) // Pass the anime info object
-            }
-            startActivity(intent)
-        } else {
-            // Handle the case where there are no episodes
-            Log.e("AnimeInfoActivity", "No episodes available for this anime.")
-        }
     }
 }
