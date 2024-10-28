@@ -116,6 +116,8 @@ class AnimeInfoActivity : AppCompatActivity() {
                         override fun onResponse(call: Call<FavoriteResource>, response: Response<FavoriteResource>) {
                             if (response.isSuccessful) {
                                 Log.d("Favorite", "Added to favorites")
+                                // Update shared preferences
+                                updateFavoriteIds(animeId, add = true)
                             } else {
                                 Log.e("Favorite", "Error adding to favorites: ${response.code()}")
                             }
@@ -132,10 +134,6 @@ class AnimeInfoActivity : AppCompatActivity() {
                 Log.e("Fetch Data", "Error fetching anime information: $e")
             }
         }
-
-        val favoriteIds = sharedPreferences.getStringSet("favorite_ids", emptySet())
-        val newFavoriteIds = favoriteIds?.toSet()?.plus(animeId) ?: setOf(animeId)
-        sharedPreferences.edit().putStringSet("favorite_ids", newFavoriteIds).apply()
     }
 
     private fun removeAnimeFromFavorites(animeId: String) {
@@ -146,6 +144,8 @@ class AnimeInfoActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Log.d("Favorite", "Removed from favorites")
+                    // Update shared preferences
+                    updateFavoriteIds(animeId, add = false)
                 } else {
                     Log.e("Favorite", "Error removing from favorites: ${response.code()}")
                 }
@@ -155,12 +155,17 @@ class AnimeInfoActivity : AppCompatActivity() {
                 Log.e("Favorite", "Error removing from favorites: $t")
             }
         })
-
-        val favoriteIds = sharedPreferences.getStringSet("favorite_ids", emptySet())
-        val newFavoriteIds = favoriteIds?.toSet()?.minus(animeId) ?: emptySet()
-        sharedPreferences.edit().putStringSet("favorite_ids", newFavoriteIds).apply()
     }
 
+    private fun updateFavoriteIds(animeId: String, add: Boolean) {
+        val favoriteIds = sharedPreferences.getStringSet("favorite_ids", emptySet())?.toMutableSet() ?: mutableSetOf()
+        if (add) {
+            favoriteIds.add(animeId)
+        } else {
+            favoriteIds.remove(animeId)
+        }
+        sharedPreferences.edit().putStringSet("favorite_ids", favoriteIds).apply()
+    }
     private fun fetchAnimeInfo(animeId: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
