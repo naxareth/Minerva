@@ -40,6 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:layout_marginBottom="60dp"
         android:orientation="horizontal">
 
         <Button
@@ -47,6 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Previous"
+            android:textSize="20sp"
             android:fontFamily="@font/bebas"
             android:background="@color/transparent"
             android:textColor="#F6306B"/>
@@ -59,13 +61,14 @@
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/bebas"
             android:text="Page 1"
-            android:textSize="17sp" />
+            android:textSize="20sp"/>
 
         <Button
             android:id="@+id/nextPageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Next"
+            android:textSize="20sp"
             android:fontFamily="@font/bebas"
             android:background="@color/transparent"
             android:textColor="#F6306B"/>

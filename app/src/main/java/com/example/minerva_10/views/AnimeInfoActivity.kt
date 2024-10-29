@@ -140,6 +140,8 @@ class AnimeInfoActivity : AppCompatActivity() {
         val sharedPreferencesToken = getSharedPreferences("token_prefs", MODE_PRIVATE)
         val token = sharedPreferencesToken.getString("token", "") ?: ""
 
+        Log.d("Favorite", "Removing favorite: $animeId") // Log the anime ID being removed
+
         RetrofitClient.api.deleteFavorite("Bearer $token", animeId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {

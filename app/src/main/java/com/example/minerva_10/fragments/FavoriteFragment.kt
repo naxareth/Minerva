@@ -14,12 +14,17 @@ import com.example.minerva_10.R
 import com.example.minerva_10.adapter.FavoriteParentAdapter
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.FavoriteResponse
-import com.example.minerva_10.views.AnimeInfoActivity // Import the AnimeInfoActivity
+import com.example.minerva_10.views.AnimeInfoActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class FavoriteFragment : Fragment() {
+// Define a callback interface to notify changes in favorites
+interface FavoritesChangeListener {
+    fun onFavoritesChanged()
+}
+
+class FavoriteFragment : Fragment(), FavoritesChangeListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: FavoriteParentAdapter
@@ -56,6 +61,14 @@ class FavoriteFragment : Fragment() {
         return view
     }
 
+    // This method is called to refresh the favorites list
+    override fun onFavoritesChanged() {
+        val token = arguments?.getString("token")
+        if (token != null) {
+            fetchFavorites(token) // Re-fetch the favorites
+        }
+    }
+
     private fun fetchFavorites(token: String) {
         RetrofitClient.api.getFavorites("Bearer $token").enqueue(object : Callback<FavoriteResponse> {
             override fun onResponse(call: Call<FavoriteResponse>, response: Response<FavoriteResponse>) {
@@ -81,5 +94,13 @@ class FavoriteFragment : Fragment() {
                 Log.e("FavoriteFragment", "Error fetching favorites", t)
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val token = arguments?.getString("token")
+        if (token != null) {
+            fetchFavorites(token) // Re-fetch the favorites when the fragment is resumed
+        }
     }
 }
