@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
+import android.widget.TextView
 
 class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
 
@@ -35,6 +36,7 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
     private var hasNextPage = true
     private var isLoading = false
 
+    private lateinit var recommendedTitleTextView: TextView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,6 +45,7 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
 
         searchEditText = view.findViewById(R.id.searchEditText)
         recyclerView = view.findViewById(R.id.recommendedAnimeRecyclerView)
+        recommendedTitleTextView = view.findViewById(R.id.recommendedTitleTextView)
 
         recyclerView?.layoutManager = LinearLayoutManager(context)
 
@@ -87,6 +90,8 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString().lowercase().trim()
 
+                recommendedTitleTextView.visibility = if (query.isNotEmpty()) View.GONE else View.VISIBLE
+
                 // Show the clear icon when there is text, else show the search icon
                 val icon = if (query.isNotEmpty()) R.drawable.clear_24px else R.drawable.search_24px
                 searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0)
@@ -103,6 +108,7 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
                         if (query.isNotBlank()) {
                             fetchPaginatedSearchResults(query)
                         } else {
+                            animeList.clear()
                             animeList.addAll(recommendedAnimeList)
                             animeAdapter.notifyDataSetChanged()
                         }
