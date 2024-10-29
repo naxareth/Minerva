@@ -111,8 +111,8 @@ class HomeFragment : Fragment() {
                 val allAnimes = topAiringAnimes + recentEpisodes
 
                 // Add all anime items to ViewModel
-                sharedViewModel.setAnimeList(allAnimes.map { Item(it.title, it.image, it.id) })
-                sharedViewModel.setTopAiringList(topAiringAnimes.map { Item(it.title, it.image, it.id) })
+                sharedViewModel.setAnimeList(allAnimes.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) })
+                sharedViewModel.setTopAiringList(topAiringAnimes.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) })
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -133,8 +133,8 @@ class HomeFragment : Fragment() {
 
                     // Create categories for both
                     val categories = listOf(
-                        Category("TOP AIRING", topAiringAnimes.results.map { Item(it.title, it.image, it.id) }),
-                        Category("RECENT EPISODES", recentEpisodes.results.map { Item(it.title, it.image, it.id) })
+                        Category("TOP AIRING", topAiringAnimes.results.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) }),
+                        Category("RECENT EPISODES", recentEpisodes.results.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) })
                     )
 
                     // Set the adapter for the RecyclerView
