@@ -43,35 +43,62 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_gravity="center"
             android:padding="16dp">
 
-            <EditText
-                android:id="@+id/etEmail"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSignEmail"
+                android:layout_width="329dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Email"
-                android:fontFamily="@font/bebas"
-                android:inputType="textEmailAddress"
-                android:padding="12dp" />
+                android:fontFamily="@font/oswald"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.499">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:fontFamily="@font/oswald"
+                    android:hint="Email:"
+                    android:inputType="textEmailAddress" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
+                android:gravity="left"
                 android:orientation="horizontal"> <!-- Center contents of this LinearLayout -->
 
-                <EditText
-                    android:id="@+id/etOtp"
-                    android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilOtp"
+                    android:layout_width="205dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:hint="OTP"
-                    android:fontFamily="@font/bebas"
-                    android:inputType="text"
-                    android:padding="12dp" />
+                    android:fontFamily="@font/oswald"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.428">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etOtp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/transparent"
+                        android:ems="10"
+                        android:fontFamily="@font/oswald"
+                        android:hint="Otp:"
+                        android:inputType="text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
 
                 <Button
                     android:id="@+id/btSendOtp"
@@ -79,6 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:padding="12dp"
+                    android:layout_gravity="center"
                     android:fontFamily="@font/bebas"
                     android:text="Send OTP"
                     android:textColor="@android:color/white"
@@ -96,25 +124,53 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/etNewPassword"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilOtpPass"
+                android:layout_width="329dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="New Password"
-                android:fontFamily="@font/bebas"
-                android:inputType="textPassword"
-                android:padding="12dp" />
+                android:fontFamily="@font/oswald"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.569"
+                app:passwordToggleEnabled="true">
 
-            <EditText
-                android:id="@+id/etConfirmNewPassword"
-                android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNewPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:fontFamily="@font/oswald"
+                    android:hint="New Password:"
+                    android:inputType="textPassword" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilConfirmNewPassword"
+                android:layout_width="329dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:fontFamily="@font/bebas"
-                android:hint="Confirm New Password"
-                android:inputType="textPassword"
-                android:padding="12dp" />
+                android:fontFamily="@font/oswald"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.639"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etConfirmNewPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:fontFamily="@font/oswald"
+                    android:hint="Confirm New Password:"
+                    android:inputType="textPassword" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

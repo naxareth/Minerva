@@ -1,6 +1,7 @@
 package com.example.minerva_10.api.interfaces
 
 import com.example.minerva_10.api.responses.AnimeInfo
+import com.example.minerva_10.api.responses.AnimeResponse // Import the new AnimeResponse
 import com.example.minerva_10.api.responses.EpisodeInfo
 import com.example.minerva_10.api.responses.Search
 import retrofit2.Call
@@ -15,9 +16,11 @@ interface AnimeApiService {
     @GET("top-airing")
     suspend fun getTopAiringAnimes(@Query("page") page: Int): PaginatedResponse
 
-    @GET("top-airing")
+    @GET("top-airing") // Keep this if you still want the paginated response
     suspend fun getRecommendedAnime(@Query("page") page: Int): PaginatedResponse
 
+    @GET("top-airing")
+    suspend fun getTopAiringAnimesResponse(@Query("page") page: Int): AnimeResponse // New endpoint returning AnimeResponse
 
     @GET("recent-episodes")
     suspend fun getRecentEpisodes(@Query("page") page: Int): PaginatedResponse
@@ -34,7 +37,6 @@ interface AnimeApiService {
         @Path("query") query: String,  // Use @Path for the query parameter
         @Query("page") page: Int       // Keep page as a query parameter
     ): Search  // Return the Search response directly
-
 
     @GET("servers/{episodeId}")
     suspend fun getServers(@Path("episodeId") episodeId: String): List<Server>

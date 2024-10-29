@@ -2,13 +2,13 @@ package com.example.minerva_10.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,7 +22,7 @@ import com.example.minerva_10.api.responses.ProfileResponse
 import com.example.minerva_10.api.responses.LogoutResponse
 import com.example.minerva_10.views.LoginActivity
 import com.example.minerva_10.views.SharedViewModel
-import com.example.minerva_10.views.AnimeInfoActivity // Import the AnimeInfoActivity
+import com.example.minerva_10.views.AnimeInfoActivity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -33,6 +33,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var tvName: TextView
     private lateinit var btLogout: Button
+    private lateinit var loadingAnimation: View // Declare a variable for the loading animation
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +48,7 @@ class HomeFragment : Fragment() {
 
         tvName = view.findViewById(R.id.tvName)
         btLogout = view.findViewById(R.id.btLogout)
+        loadingAnimation = view.findViewById(R.id.loadingAnimation) // Initialize the loading animation
 
         // Get the token from shared preferences
         val sharedPreferences = activity?.getSharedPreferences("token_prefs", 0)
@@ -105,51 +107,42 @@ class HomeFragment : Fragment() {
         // Fetch anime data using coroutines
         lifecycleScope.launch {
             try {
-                val topAiringAnimes = RetrofitClient.animeApiService.getTopAiringAnimes(1).results
-                val recentEpisodes = RetrofitClient.animeApiService.getRecentEpisodes(1).results
+                // Show the loading animation
+                loadingAnimation.visibility = View.VISIBLE
 
-                val allAnimes = topAiringAnimes + recentEpisodes
+                // Use async to fetch data from both endpoints concurrently
+                val topAiringDeferred = async { RetrofitClient.animeApiService.getTopAiringAnimes(1) }
+                val recentEpisodesDeferred = async { RetrofitClient.animeApiService.getRecentEpisodes(1) }
 
-                // Add all anime items to ViewModel
-                sharedViewModel.setAnimeList(allAnimes.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) })
-                sharedViewModel.setTopAiringList(topAiringAnimes.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) })
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+                // Wait for both responses
+                val topAiringAnimes = topAiringDeferred.await()
+                val recentEpisodes = recentEpisodesDeferred.await()
 
-            val parentRecyclerView: RecyclerView = view.findViewById(R.id.parentRecyclerView)
-            parentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                // Create categories for both
+                val categories = listOf(
+                    Category("TOP AIRING", topAiringAnimes.results.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) }),
+                    Category("RECENT EPISODES", recentEpisodes.results.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) })
+                )
 
-            // Use Coroutines to fetch data from both endpoints
-            lifecycleScope.launch {
-                try {
-                    // Fetch data from both endpoints concurrently
-                    val topAiringDeferred = async { RetrofitClient.animeApiService.getTopAiringAnimes(1) }
-                    val recentEpisodesDeferred = async { RetrofitClient.animeApiService.getRecentEpisodes(1) }
-
-                    // Wait for both responses
-                    val topAiringAnimes = topAiringDeferred.await()
-                    val recentEpisodes = recentEpisodesDeferred.await()
-
-                    // Create categories for both
-                    val categories = listOf(
-                        Category("TOP AIRING", topAiringAnimes.results.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) }),
-                        Category("RECENT EPISODES", recentEpisodes.results.map { Item(it.title, it.image, it.id, it.releaseDate, it.subOrDub) })
-                    )
-
-                    // Set the adapter for the RecyclerView
-                    parentRecyclerView.adapter = AnimeParentAdapter(categories, requireActivity()) { item ->
-                        // Create an Intent to navigate to AnimeInfoActivity
-                        val intent = Intent(requireContext(), AnimeInfoActivity::class.java).apply {
-                            putExtra("anime_id", item.id) // Pass the item's ID
-                        }
-                        startActivity(intent) // Start the AnimeInfoActivity
+                // Set the adapter for the RecyclerView
+                val parentRecyclerView: RecyclerView = view.findViewById(R.id.parentRecyclerView)
+                parentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                parentRecyclerView.adapter = AnimeParentAdapter(categories, requireActivity()) { item ->
+                    // Create an Intent to navigate to AnimeInfoActivity
+                    val intent = Intent(requireContext(), AnimeInfoActivity::class.java).apply {
+                        putExtra("anime_id", item.id) // Pass the item's ID
                     }
-
-                } catch (e: Exception) {
-                    // Handle the error
-                    e.printStackTrace()
+                    startActivity(intent) // Start the AnimeInfoActivity
                 }
+
+                // Add a delay before hiding the loading animation
+                Handler().postDelayed({
+                    loadingAnimation.visibility = View.GONE
+                }, 500) // Adjust the delay as needed
+
+            } catch (e: Exception) {
+                // Handle the error
+                e.printStackTrace()
             }
         }
     }

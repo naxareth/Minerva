@@ -114,7 +114,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         downloadButton.setOnClickListener {
             val selectedQuality = availableQualities[qualitySpinner.selectedItemPosition]
             // Change the file path to the Downloads folder
-            val filePath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${animeInfo.title}_${episodeInfo.number}.mp4"
+            val filePath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS )}/${animeInfo.title}_${episodeInfo.number}.mp4"
 
             val downloadItem = DownloadItem(
                 animeId = animeInfo.id,
@@ -132,6 +132,18 @@ class VideoPlayerActivity : AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("VideoPlayerActivity", "Storage permission granted")
+                // Perform actions that require storage permission here
+            } else {
+                Log.e("VideoPlayerActivity", "Storage permission denied")
+                // Handle the case when permission is not granted
+            }
+        }
+    }
+
     override fun onBackPressed() {
         // Instead of finishing the activity, navigate back to the AnimeInfoFragment
         super.onBackPressed()
@@ -141,7 +153,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(android .Manifest.permission.POST_NOTIFICATIONS), 1)
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
             }
         }
     }
@@ -151,7 +163,7 @@ class VideoPlayerActivity : AppCompatActivity() {
             val channelId = "anime_download_channel"
             val channelName = "Anime Download"
             val channelDescription = "Notifications for anime downloads"
-            val importance = NotificationManager.IMPORTANCE_LOW
+            val importance = NotificationManager.IMPORTANCE_HIGH // Set to HIGH for more visibility
 
             val channel = NotificationChannel(channelId, channelName, importance).apply {
                 description = channelDescription
@@ -224,7 +236,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 val serverName = "gogocdn"
                 val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
 
-                Log.d("VideoPlayerActivity", "Streaming Response: $streamingResponse")
+                Log.d("VideoPlayerActivity", " Streaming Response: $streamingResponse")
 
                 val selectedSource = streamingResponse.sources.find { it.quality == quality }
                 if (selectedSource != null) {
@@ -275,7 +287,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                             .setSmallIcon(R.drawable.download) // Replace with your download icon
                             .setContentTitle("Downloading Anime")
                             .setContentText("Download started...")
-                            .setPriority(NotificationCompat.PRIORITY_LOW)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH) // Set to HIGH
                             .setOngoing(true) // Makes the notification ongoing
                         notificationManager.notify(notificationId, builder.build())
 
@@ -338,7 +350,7 @@ class VideoPlayerActivity : AppCompatActivity() {
 
             for ((index, url) in segmentUrls.withIndex()) {
                 Log.d("VideoPlayerActivity", "Downloading segment: $url")
-                val request = Request.Builder().url(url).build()
+                val request = Request.Builder ().url(url).build()
 
                 try {
                     client.newCall(request).execute().use { response ->
@@ -377,7 +389,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 .setSmallIcon(R.drawable.download) // Replace with your download icon
                 .setContentTitle("Anime Download Complete")
                 .setContentText("Download finished successfully!")
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // Set to HIGH
                 .setOngoing(false) // Makes the notification non-ongoing
                 .setProgress(0, 0, false) // Reset progress
             notificationManager.notify(notificationId, builder.build())
@@ -389,7 +401,7 @@ class VideoPlayerActivity : AppCompatActivity() {
             .setSmallIcon(R.drawable.download) // Replace with your download icon
             .setContentTitle("Downloading Anime")
             .setContentText("Download in progress... ($progressPercentage%)")
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // Set to HIGH
             .setOngoing(true) // Makes the notification ongoing
             .setProgress(100, progressPercentage, false) // Update progress
         notificationManager.notify(notificationId, builder.build())
@@ -398,7 +410,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Log.d("VideoPlayerActivity", "VideoPlayerActivity paused")
-        viewModel.playbackPosition = viewModel.player?.currentPosition ?: 0
+        viewModel.playbackPosition = viewModel.player?.currentPosition ?:  0
         viewModel.player?.pause()
     }
 

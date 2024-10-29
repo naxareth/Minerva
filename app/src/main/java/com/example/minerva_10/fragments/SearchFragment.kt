@@ -151,16 +151,20 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
     private fun loadRecommendedAnime() {
         lifecycleScope.launch {
             try {
-                val topAiringResults = RetrofitClient.animeApiService.getTopAiringAnimes(currentPage)
+                // Use the new endpoint to get AnimeResponse
+                val topAiringResults = RetrofitClient.animeApiService.getTopAiringAnimesResponse(currentPage)
                 recommendedAnimeList = topAiringResults.results.map {
-                    SearchResult(
+                    SearchResult( //please fix this, AnimeResponse does not call the <List> SearchResult from my data class at all, should be Result
                         id = it.id,
                         title = it.title,
                         image = it.image,
-                        releaseDate = it.releaseDate ?: " ",
-                        subOrDub = it.subOrDub ?: " "
+                        releaseDate = it.releaseDate ?: "Unknown Release Date", // Default to a more informative string
+                        subOrDub = it.subOrDub ?: "Unknown" // Default to a more informative string
                     )
                 }.toMutableList() // Store in the new list
+
+                // Clear the animeList before adding recommended animes
+                animeList.clear()
                 animeList.addAll(recommendedAnimeList)
                 animeAdapter.notifyDataSetChanged()
             } catch (e: Exception) {

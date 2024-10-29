@@ -41,20 +41,5 @@
             app:menu="@menu/bottom_navigation_menu" />
     </androidx.cardview.widget.CardView>
 
-    <!-- Loading Animation -->
-    <RelativeLayout
-        android:id="@+id/loading_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="#F8F8F8"
-        android:gravity="center">
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true" />
-</RelativeLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,8 +27,8 @@ class SearchAdapter(
 
         fun bind(anime: SearchResult, listener: OnItemClickListener) {
             animeTitle.text = anime.title
-            releaseDate.text = itemView.context.getString(R.string.release_date, anime.releaseDate ?: "N/A")
-            subOrDub.text = itemView.context.getString(R.string.type, anime.subOrDub ?: "Unknown")
+            releaseDate.text = anime.releaseDate
+            subOrDub.text = anime.subOrDub
 
 
             Glide.with(itemView.context)

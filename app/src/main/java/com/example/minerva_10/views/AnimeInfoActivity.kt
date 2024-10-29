@@ -60,6 +60,10 @@ class AnimeInfoActivity : AppCompatActivity() {
 
         animeId = intent.getStringExtra("anime_id")
         Log.d("AnimeInfoActivity", "Anime ID: $animeId") // Log the anime ID
+
+        // Show loading animation
+        binding.loadingAnimation.visibility = View.VISIBLE
+
         fetchAnimeInfo(animeId ?: "")
 
         binding.playButton.setOnClickListener { playFirstEpisode() } // Call the method to play the first episode
@@ -75,12 +79,49 @@ class AnimeInfoActivity : AppCompatActivity() {
         checkIfAnimeIsFavorite(animeId ?: "")
     }
 
+    private fun fetchAnimeInfo(animeId: String) {
+        // Show loading animation
+        binding.loadingAnimation.visibility = View.VISIBLE
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val animeInfo: AnimeInfo = animeApiService.getAnimeInfo(animeId)
+                Log.d("Fetch Data", "Anime Information: ${animeInfo.title}")
+
+                // Store the animeInfo for later use
+                this@AnimeInfoActivity.animeInfo = animeInfo // Store the animeInfo
+
+                withContext(Dispatchers.Main) {
+                    // Update the UI with the anime information
+                    updateAnimeInfoUI(animeInfo)
+                    // Update the episode list
+                    episodeAdapter.updateEpisodes(animeInfo.episodes)
+
+                    // Hide loading animation after data is set
+                    binding.loadingAnimation.visibility = View.GONE
+                }
+            } catch (e: IOException) {
+                Log.e("Fetch Data", "Error fetching anime information: $e")
+                withContext(Dispatchers.Main) {
+                    // Hide loading animation on error
+                    binding.loadingAnimation.visibility = View.GONE
+                }
+            } catch (e: HttpException) {
+                Log.e("Fetch Data", "Error fetching anime information: $e")
+                withContext(Dispatchers.Main) {
+                    // Hide loading animation on error
+                    binding.loadingAnimation.visibility = View.GONE
+                }
+            }
+        }
+    }
+
     private fun playFirstEpisode() {
         // Check if animeInfo is initialized and has episodes
         if (this::animeInfo.isInitialized && animeInfo.episodes.isNotEmpty()) {
             val firstEpisode = animeInfo.episodes[0]
             val intent = Intent(this, VideoPlayerActivity::class.java).apply {
-                putExtra("EPISODE_INFO", firstEpisode) // Pass the first episode object
+                putExtra("EP ISODE_INFO", firstEpisode) // Pass the first episode object
                 putExtra("ANIME_INFO", animeInfo) // Pass the anime info object
             }
             startActivity(intent)
@@ -167,28 +208,6 @@ class AnimeInfoActivity : AppCompatActivity() {
             favoriteIds.remove(animeId)
         }
         sharedPreferences.edit().putStringSet("favorite_ids", favoriteIds).apply()
-    }
-    private fun fetchAnimeInfo(animeId: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val animeInfo: AnimeInfo = animeApiService.getAnimeInfo(animeId)
-                Log.d("Fetch Data", "Anime Information: ${animeInfo.title}")
-
-                // Store the animeInfo for later use
-                this@AnimeInfoActivity.animeInfo = animeInfo // Store the animeInfo
-
-                withContext(Dispatchers.Main) {
-                    // Update the UI with the anime information
-                    updateAnimeInfoUI(animeInfo)
-                    // Update the episode list
-                    episodeAdapter.updateEpisodes(animeInfo.episodes)
-                }
-            } catch (e: IOException) {
-                Log.e("Fetch Data", "Error fetching anime information: $e")
-            } catch (e: HttpException) {
-                Log.e("Fetch Data", "Error fetching anime information: $e")
-            }
-        }
     }
 
     private fun updateAnimeInfoUI(animeInfo: AnimeInfo) {

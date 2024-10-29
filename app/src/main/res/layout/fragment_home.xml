@@ -6,13 +6,7 @@
     android:layout_height="match_parent"
     android:background="#F8F8F8">
 
-    <!-- Username TextView -->
-
-
-    <!-- Logout Button -->
-
-    <!-- RecyclerView -->
-
+    <!-- Existing UI elements -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView3"
         android:layout_width="wrap_content"
@@ -75,6 +69,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView2" />
+
+    <!-- Include loading animation -->
+    <include
+        android:id="@+id/loadingAnimation"
+        layout="@layout/loading_animation"
+        android:visibility="gone" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"

@@ -61,7 +61,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilSignEmail"
         android:layout_width="329dp"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/oswald"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -72,7 +72,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etSignEmail"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/transparent"
             android:ems="10"
             android:fontFamily="@font/oswald"
@@ -84,7 +84,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilSignName"
         android:layout_width="329dp"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/oswald"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -95,7 +95,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etSignName"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/transparent"
             android:ems="10"
             android:fontFamily="@font/oswald"
@@ -107,7 +107,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilSignPass"
         android:layout_width="329dp"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/oswald"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -119,7 +119,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etSignPass"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/transparent"
             android:ems="10"
             android:fontFamily="@font/oswald"
@@ -131,7 +131,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilConfirmPassword"
         android:layout_width="329dp"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/oswald"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -143,7 +143,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etConfirmPassword"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/transparent"
             android:ems="10"
             android:fontFamily="@font/oswald"
