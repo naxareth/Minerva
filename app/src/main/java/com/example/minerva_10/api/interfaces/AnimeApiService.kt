@@ -15,6 +15,10 @@ interface AnimeApiService {
     @GET("top-airing")
     suspend fun getTopAiringAnimes(@Query("page") page: Int): PaginatedResponse
 
+    @GET("top-airing")
+    suspend fun getRecommendedAnime(@Query("page") page: Int): PaginatedResponse
+
+
     @GET("recent-episodes")
     suspend fun getRecentEpisodes(@Query("page") page: Int): PaginatedResponse
 

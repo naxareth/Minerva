@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,9 @@ import com.example.minerva_10.adapter.SearchAdapter
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.SearchResult
 import kotlinx.coroutines.launch
+import android.os.Handler
+import android.os.Looper
+import android.view.MotionEvent
 
 class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
 
@@ -38,13 +42,14 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
         searchEditText = view.findViewById(R.id.searchEditText)
         recyclerView = view.findViewById(R.id.recommendedAnimeRecyclerView)
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView?.layoutManager = LinearLayoutManager(context)
 
         // Create the adapter and set the listener
         animeAdapter = SearchAdapter(animeList, this)
-        recyclerView.adapter = animeAdapter
+        recyclerView?.adapter = animeAdapter
 
         setupSearch()
+        setupSearchActionListener() // Add this to listen to the Search action on the keyboard
 
         // Load recommended anime initially (from Top Airing)
         loadRecommendedAnime()
@@ -68,25 +73,72 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
         return view
     }
 
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
+
     private fun setupSearch() {
         searchEditText.addTextChangedListener(object : TextWatcher {
+            private var searchQuery = ""
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString().lowercase().trim()
-                if (query.isNotBlank()) {
-                    currentPage = 1
-                    animeList.clear()
-                    fetchPaginatedSearchResults(query)
-                } else {
-                    // If the query is empty, reset to recommended animes
-                    animeList.clear()
-                    animeList.addAll(recommendedAnimeList) // Reset to recommended animes
-                    animeAdapter.notifyDataSetChanged()
+
+                // Show the clear icon when there is text, else show the search icon
+                val icon = if (query.isNotEmpty()) R.drawable.clear_24px else R.drawable.search_24px
+                searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0)
+
+                // Handle search execution with delay
+                searchRunnable?.let { searchHandler.removeCallbacks(it) }
+                searchRunnable = Runnable {
+                    if (query != searchQuery) {
+                        searchQuery = query
+                        currentPage = 1
+                        animeList.clear()
+                        animeAdapter.notifyDataSetChanged()
+
+                        if (query.isNotBlank()) {
+                            fetchPaginatedSearchResults(query)
+                        } else {
+                            animeList.addAll(recommendedAnimeList)
+                            animeAdapter.notifyDataSetChanged()
+                        }
+                    }
                 }
+                searchHandler.postDelayed(searchRunnable!!, 500)
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        // Handle the clear button click by checking if it's the clear icon, then clearing text
+        searchEditText.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                val clearIcon = R.drawable.clear_24px
+                val drawableEnd = searchEditText.compoundDrawables[2]
+
+                if (drawableEnd != null && event.rawX >= (searchEditText.right - drawableEnd.bounds.width())) {
+                    // Clear text if clear icon is clicked
+                    searchEditText.text.clear()
+                    currentPage = 1
+                    animeList.clear()
+                    animeAdapter.notifyDataSetChanged()
+
+                    animeList.addAll(recommendedAnimeList) // Reload recommended animes
+                    animeAdapter.notifyDataSetChanged()
+                    true
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        }
     }
+
+
+
 
     private fun loadRecommendedAnime() {
         lifecycleScope.launch {
@@ -97,8 +149,8 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
                         id = it.id,
                         title = it.title,
                         image = it.image,
-                        releaseDate = it.releaseDate ?: "Unknown",
-                        subOrDub = it.subOrDub ?: "Unknown"
+                        releaseDate = it.releaseDate ?: " ",
+                        subOrDub = it.subOrDub ?: " "
                     )
                 }.toMutableList() // Store in the new list
                 animeList.addAll(recommendedAnimeList)
@@ -110,29 +162,28 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
     }
 
     private fun fetchPaginatedSearchResults(query: String) {
-        if (isLoading || !hasNextPage) return
+        if (isLoading || !hasNextPage) return  // Prevents concurrent modifications
         isLoading = true
 
         lifecycleScope.launch {
             try {
-                // Call the searchAnime API for search results
                 val searchResults = RetrofitClient.animeApiService.searchAnime(query, currentPage)
-
-                // Add the fetched results to the animeList
-                animeList.addAll(searchResults.results)
-                animeAdapter.notifyDataSetChanged()
-
-                // Update pagination data
+                animeList.addAll(searchResults.results) // Add results
+                animeAdapter.notifyDataSetChanged() // Refresh adapter
                 hasNextPage = searchResults.hasNextPage
+                if (!hasNextPage) {
+                    recyclerView.clearOnScrollListeners() // Stop further pagination calls
+                }
                 currentPage++
-
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
-                isLoading = false
+                isLoading = false // Reset loading status
             }
         }
     }
+
+
 
     // Handle the click event
     override fun onItemClick(anime: SearchResult) {
@@ -149,4 +200,22 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
             .addToBackStack(null)
             .commit()
     }
+
+    private fun setupSearchActionListener() {
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = searchEditText.text.toString().lowercase().trim()
+                if (query.isNotBlank()) {
+                    currentPage = 1  // Reset the page for new search
+                    animeList.clear()  // Clear the existing results
+                    animeAdapter.notifyDataSetChanged()  // Notify adapter to refresh view
+                    fetchPaginatedSearchResults(query)  // Call search function with query
+                }
+                true  // Return true to indicate the search action was handled
+            } else {
+                false  // If the action isn't search, ignore it
+            }
+        }
+    }
+
 }

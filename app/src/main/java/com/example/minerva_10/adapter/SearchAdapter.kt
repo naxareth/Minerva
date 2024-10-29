@@ -27,8 +27,9 @@ class SearchAdapter(
 
         fun bind(anime: SearchResult, listener: OnItemClickListener) {
             animeTitle.text = anime.title
-            releaseDate.text = itemView.context.getString(R.string.release_date, anime.releaseDate)
-            subOrDub.text = itemView.context.getString(R.string.type, anime.subOrDub)
+            releaseDate.text = itemView.context.getString(R.string.release_date, anime.releaseDate ?: "N/A")
+            subOrDub.text = itemView.context.getString(R.string.type, anime.subOrDub ?: "Unknown")
+
 
             Glide.with(itemView.context)
                 .load(anime.image)
