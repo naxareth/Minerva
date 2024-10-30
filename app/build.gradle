@@ -119,6 +119,9 @@ dependencies {
     // For Kotlin use kapt instead of annotationProcessor
     kapt "androidx.room:room-compiler:$room_version"
 
+    //For Shimmer effect
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
 
 
 }

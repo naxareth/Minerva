@@ -42,8 +42,8 @@ class AnimeParentAdapter(
         private val previousPageButton: Button = view.findViewById(R.id.previousPageButton)
         private val nextPageButton: Button = view.findViewById(R.id.nextPageButton)
         private val currentPageTextView: TextView = view.findViewById(R.id.currentPageTextView)
+        private val shimmerLayout: com.facebook.shimmer.ShimmerFrameLayout = view.findViewById(R.id.shimmerLayout)
 
-        // Separate variables for pagination state
         private var currentPage = 1
         private var hasNextPage = true
         private var isLoading = false
@@ -51,6 +51,8 @@ class AnimeParentAdapter(
 
         fun bind(category: Category, onItemClick: (Item) -> Unit) {
             title.text = category.title
+            shimmerLayout.visibility = View.VISIBLE // Show shimmer while loading
+            subRecyclerView.visibility = View.GONE // Hide subRecyclerView initially
 
             // Set up the GridLayoutManager with 3 columns for the items in this category
             subRecyclerView.layoutManager = GridLayoutManager(subRecyclerView.context, 3) // 3 columns
@@ -90,40 +92,4 @@ class AnimeParentAdapter(
                         // Use cached data
                         val items = fetchedPages["$categoryTitle$page"]!!
                         updateRecyclerView(items, onItemClick)
-                    } else {
-                        // Fetch new data from API
-                        val itemsResponse = when (categoryTitle.uppercase()) {
-                            "TOP AIRING" -> RetrofitClient.animeApiService.getTopAiringAnimes(page)
-                            "RECENT EPISODES" -> RetrofitClient.animeApiService.getRecentEpisodes(page)
-                            else -> throw IllegalArgumentException("Unknown category: $categoryTitle")
-                        }
 
-                        // Cache the fetched items
-                        fetchedPages["$categoryTitle$page"] = itemsResponse.results
-                        updateRecyclerView(itemsResponse.results, onItemClick)
-
-                        // Update pagination state
-                        hasNextPage = itemsResponse.hasNextPage
-                    }
-
-                    currentPageTextView.text = "Page $currentPage"
-                } catch (e: Exception) {
-                    Log.e("AnimeParentAdapter", "Error loading items", e)
-                } finally {
-                    isLoading = false
-                }
-            }
-        }
-
-        private fun updateRecyclerView(items: List<Item>, onItemClick: (Item) -> Unit) {
-            val subAdapter = AnimeAdapter(items, activity, onItemClick)
-            subRecyclerView.adapter = subAdapter
-        }
-    }
-
-    // Function to update the adapter with new categories
-    fun updateCategories(newCategories: List<Category>) {
-        categories = newCategories
-        notifyDataSetChanged() // Notify the adapter that the data has changed
-    }
-}

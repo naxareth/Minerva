@@ -13,6 +13,7 @@ import com.example.minerva_10.R
 import com.example.minerva_10.adapter.AnimeParentAdapter
 import com.example.minerva_10.api.RetrofitClient
 import com.example.minerva_10.api.responses.Category
+import com.facebook.shimmer.ShimmerFrameLayout
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -20,6 +21,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var parentRecyclerView: RecyclerView
     private lateinit var adapter: AnimeParentAdapter
+    private lateinit var shimmerFrameLayout: ShimmerFrameLayout // Add shimmer layout reference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,6 +32,10 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Initialize shimmer layout and start animation
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_view_container)
+        shimmerFrameLayout.startShimmer()
 
         parentRecyclerView = view.findViewById(R.id.parentRecyclerView)
         parentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -66,6 +72,11 @@ class HomeFragment : Fragment() {
                     Category("TOP AIRING", topAiringAnimes.results),
                     Category("RECENT EPISODES", recentEpisodes.results)
                 )
+
+                // Stop shimmer effect and show the data
+                shimmerFrameLayout.stopShimmer()
+                shimmerFrameLayout.visibility = View.GONE
+                parentRecyclerView.visibility = View.VISIBLE
 
                 // Update the adapter with new categories
                 adapter.updateCategories(categories)
