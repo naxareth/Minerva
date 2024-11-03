@@ -31,6 +31,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
 import kotlinx.coroutines.*
+import kotlinx.coroutines.NonCancellable.isActive
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.HttpException
@@ -50,22 +51,25 @@ class VideoPlayerActivity : AppCompatActivity() {
     private val sharedViewModel: SharedAnimeViewModel by viewModels()
     private var availableQualities: List<String> = emptyList()
     private lateinit var downloadButton: Button
+    private lateinit var cancelButton: Button // Declare cancelButton
     private lateinit var animeInfo: AnimeInfo
-    private lateinit var backButton: Button // Declare backButton
+    private lateinit var backButton: Button
+    private var downloadJob: Job? = null // Track the download job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_player)
 
-        checkStoragePermissions() // Check for storage permissions
-        checkNotificationPermission() // Check for notification permissions
-        createNotificationChannel() // Create notification channel
+        checkStoragePermissions()
+        checkNotificationPermission()
+        createNotificationChannel()
 
         playerView = findViewById(R.id.player_view)
         animeTitleTextView = findViewById(R.id.anime_title)
         qualitySpinner = findViewById(R.id.quality_spinner)
         downloadButton = findViewById(R.id.download_button)
-        backButton = findViewById(R.id.backButton) // Initialize backButton
+        cancelButton = findViewById(R.id.cancel_button) // Initialize cancelButton
+        backButton = findViewById(R.id.backButton)
 
         animeInfo = intent.getParcelableExtra("ANIME_INFO") ?: return
         Log.d("VideoPlayerActivity", "Retrieved AnimeInfo: $animeInfo")
@@ -85,6 +89,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         playerView.setControllerVisibilityListener { visibility ->
             qualitySpinner.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
             downloadButton.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
+            cancelButton.visibility = View.GONE // Initially hidden
             animeTitleTextView.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
             backButton.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
         }
@@ -107,19 +112,32 @@ class VideoPlayerActivity : AppCompatActivity() {
             sharedViewModel.addDownloadItem(downloadItem)
 
             Log.d("VideoPlayerActivity", "Download button clicked, adding download item to Shared ViewModel: $downloadItem")
-            fetchM3U8AndDownload(episodeInfo.id, selectedQuality, filePath)
+            downloadButton.visibility = View.GONE // Hide download button
+            cancelButton .visibility = View.VISIBLE // Show cancel button
+
+            downloadJob = lifecycleScope.launch {
+                fetchM3U8AndDownload(episodeInfo.id, selectedQuality, filePath)
+            }
+        }
+
+        cancelButton.setOnClickListener {
+            downloadJob?.cancel() // Cancel the download job
+            downloadJob = null // Reset the job reference
+
+            downloadButton.visibility = View.VISIBLE // Show download button
+            cancelButton.visibility = View.GONE // Hide cancel button
         }
 
         // Set up back button click listener
         backButton.setOnClickListener {
-            onBackPressed() // Call the onBackPressed method to handle back navigation
+            onBackPressed()
         }
     }
 
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(android .Manifest.permission.POST_NOTIFICATIONS), 1)
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
             }
         }
     }
@@ -221,7 +239,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                     Log.e("VideoPlayerActivity", "No source found for quality: $quality")
                 }
             } catch (e: HttpException) {
-                Log.e("VideoPlayerActivity", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
+                Log.e("VideoPlayerActivity", "Error fetching streaming links: ${e.response()?.errorBody ()?.string()}")
             } catch (e: Exception) {
                 Log.e("VideoPlayerActivity", "Error fetching streaming links: $e")
             }
@@ -236,58 +254,57 @@ class VideoPlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchM3U8AndDownload(episodeId: String, quality: String, filePath: String) {
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    val serverName = "gogocdn"
-                    val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
+    private suspend fun fetchM3U8AndDownload(episodeId: String, quality: String, filePath: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val serverName = "gogocdn"
+                val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
 
-                    val selectedSource = streamingResponse.sources.find { it.quality == quality }
-                    if (selectedSource != null) {
-                        val m3u8Url = selectedSource.url
+                val selectedSource = streamingResponse.sources.find { it.quality == quality }
+                if (selectedSource != null) {
+                    val m3u8Url = selectedSource.url
 
-                        // Create and display a notification for the download
-                        val notificationId = 1
-                        val notificationManager = getSystemService(NotificationManager::class.java)
-                        val builder = NotificationCompat.Builder(this@VideoPlayerActivity, "anime_download_channel")
-                            .setSmallIcon(R.drawable.download) // Replace with your download icon
-                            .setContentTitle("Downloading Anime")
-                            .setContentText("Download started...")
-                            .setPriority(NotificationCompat.PRIORITY_LOW)
-                            .setOngoing(true) // Makes the notification ongoing
-                        notificationManager.notify(notificationId, builder.build())
+                    // Create and display a notification for the download
+                    val notificationId = 1
+                    val notificationManager = getSystemService(NotificationManager::class.java)
+                    val builder = NotificationCompat.Builder(this@VideoPlayerActivity, "anime_download_channel")
+                        .setSmallIcon(R.drawable.download) // Replace with your download icon
+                        .setContentTitle("Downloading Anime")
+                        .setContentText("Download started...")
+                        .setPriority(NotificationCompat.PRIORITY_LOW)
+                        .setOngoing(true) // Makes the notification ongoing
+                    notificationManager.notify(notificationId, builder.build())
 
-                        val client = OkHttpClient()
-                        val request = Request.Builder().url(m3u8Url).build()
+                    val client = OkHttpClient()
+                    val request = Request.Builder().url(m3u8Url).build()
 
-                        client.newCall(request).execute().use { response ->
-                            if (!response.isSuccessful) {
-                                Log.e("VideoPlayerActivity", "Error fetching m3u8 file: ${response.code}")
-                                return@withContext
-                            }
-                            val m3u8Content = response.body?.string() ?: return@withContext
-
-                            val baseUrl = m3u8Url.substringBeforeLast("/")
-                            val segmentUrls = parseM3U8(m3u8Content, baseUrl)
-
-                            // Change the file path to the Downloads folder
-                            val downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                            val filePath = File(downloadsFolder, "${animeInfo.title}_${episodeInfo.number}.mp4").absolutePath // Construct filePath here
-
-                            downloadSegments(segmentUrls, filePath, notificationManager, notificationId)
+                    client.newCall(request).execute().use { response ->
+                        if (!response.isSuccessful) {
+                            Log.e("VideoPlayerActivity", "Error fetching m3u8 file: ${response.code}")
+                            return@withContext
                         }
-                    } else {
-                        Log.e("VideoPlayerActivity", "No source found for quality: $quality")
+                        val m3u8Content = response.body?.string() ?: return@withContext
+
+                        val baseUrl = m3u8Url.substringBeforeLast("/")
+                        val segmentUrls = parseM3U8(m3u8Content, baseUrl)
+
+                        // Change the file path to the Downloads folder
+                        val downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                        val filePath = File(downloadsFolder, "${animeInfo.title}_${episodeInfo.number}.mp4").absolutePath // Construct filePath here
+
+                        downloadSegments(segmentUrls, filePath, notificationManager, notificationId)
                     }
-                } catch (e: HttpException) {
-                    Log.e("VideoPlayerActivity", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
-                } catch (e: Exception) {
-                    Log.e("VideoPlayerActivity", "Error fetching streaming links: $e")
+                } else {
+                    Log.e("VideoPlayerActivity", "No source found for quality: $quality")
                 }
+            } catch (e: HttpException) {
+                Log.e("VideoPlayerActivity", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
+            } catch (e: Exception) {
+                Log.e("VideoPlayerActivity", "Error fetching streaming links: $e")
             }
         }
     }
+
     private fun parseM3U8(m3u8Content: String, baseUrl: String): List<String> {
         val segmentUrls = mutableListOf<String>()
         val lines = m3u8Content.split("\n")
@@ -319,27 +336,33 @@ class VideoPlayerActivity : AppCompatActivity() {
             val totalSegments = segmentUrls.size
 
             for ((index, url) in segmentUrls.withIndex()) {
+                if (!isActive) {
+                    Log.d("VideoPlayerActivity", "Download cancelled")
+                    outputFile.delete() // Optionally delete the partially downloaded file
+                    return
+                }
+
                 Log.d("VideoPlayerActivity", "Downloading segment: $url")
                 val request = Request.Builder().url(url).build()
 
                 try {
                     client.newCall(request).execute().use { response ->
                         if (!response.isSuccessful) {
-                            Log.e("VideoPlayerActivity", "Error downloading segment: ${response.code} for URL: $url")
-                        } else {
-                            response.body?.byteStream()?.use { input ->
-                                val buffer = ByteArray(1024)
-                                var bytesRead: Int
-                                while (input.read(buffer).also { bytesRead = it } != -1) {
-                                    outputStream.write(buffer, 0, bytesRead)
-                                    totalBytesRead += bytesRead
+                            Log.e("VideoPlayerActivity", "IOException downloading segment: $url, Error: ${response.code}")
+                            return@use
+                        }
 
-                                    // Calculate progress percentage
-                                    val progressPercentage = ((index * 100 / totalSegments) + (bytesRead * 100 / outputFile.length()).toInt()).coerceAtMost(99)
-                                    updateNotificationProgress(notificationManager, notificationId, progressPercentage)
-                                }
+                        response.body?.byteStream()?.use { input ->
+                            val buffer = ByteArray(1024)
+                            var bytesRead: Int
+                            while (input.read(buffer).also { bytesRead = it } != -1) {
+                                outputStream.write(buffer, 0, bytesRead)
+                                totalBytesRead += bytesRead
+
+                                // Calculate progress percentage
+                                val progressPercentage = ((index * 100 / totalSegments) + (bytesRead * 100 / outputFile.length()).toInt()).coerceAtMost(99)
+                                updateNotificationProgress(notificationManager, notificationId, progressPercentage)
                             }
-                            Log.d("VideoPlayerActivity", "Finished downloading segment: $url")
                         }
                     }
                 } catch (e: IOException) {
@@ -349,7 +372,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 }
             }
 
-            // Explicitly set progress to 100%
+            // Explicitly set progress to  100%
             updateNotificationProgress(notificationManager, notificationId, 100)
 
             Log.d("VideoPlayerActivity", "Download complete: $filePath")
