@@ -1,6 +1,5 @@
 package com.example.minerva_10.views
 
-import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
@@ -17,9 +16,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.minerva_10.R
 import com.example.minerva_10.api.RetrofitClient
@@ -56,18 +53,11 @@ class VideoPlayerActivity : AppCompatActivity() {
     private lateinit var animeInfo: AnimeInfo
     private lateinit var backButton: Button // Declare backButton
 
-    private val REQUEST_CODE = 1 // Request code for runtime permissions
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_player)
 
-        // Hide system UI for fullscreen
-        hideSystemUI()
-
-        // Initialize backButton
-        backButton = findViewById(R.id.backButton) // Ensure this ID matches your layout
-
+        checkStoragePermissions() // Check for storage permissions
         checkNotificationPermission() // Check for notification permissions
         createNotificationChannel() // Create notification channel
 
@@ -75,6 +65,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         animeTitleTextView = findViewById(R.id.anime_title)
         qualitySpinner = findViewById(R.id.quality_spinner)
         downloadButton = findViewById(R.id.download_button)
+        backButton = findViewById(R.id.backButton) // Initialize backButton
 
         animeInfo = intent.getParcelableExtra("ANIME_INFO") ?: return
         Log.d("VideoPlayerActivity", "Retrieved AnimeInfo: $animeInfo")
@@ -83,12 +74,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         episodeInfo = intent.getParcelableExtra("EPISODE_INFO") ?: return
         apiService = RetrofitClient.animeApiService
 
-        // Request storage permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE)
-        }
-
-        // Initialize ExoPlayer
         if (viewModel.player == null) {
             viewModel.player = SimpleExoPlayer.Builder(this).build()
             playerView.player = viewModel.player
@@ -106,15 +91,9 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         fetchStreamingLinks(episodeInfo.id)
 
-        // Set up back button click listener
-        backButton.setOnClickListener {
-            onBackPressed()
-        }
-
         downloadButton.setOnClickListener {
             val selectedQuality = availableQualities[qualitySpinner.selectedItemPosition]
-            // Change the file path to the Downloads folder
-            val filePath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS )}/${animeInfo.title}_${episodeInfo.number}.mp4"
+            val filePath = "${externalCacheDir?.absolutePath}/${episodeInfo.number}.mp4"
 
             val downloadItem = DownloadItem(
                 animeId = animeInfo.id,
@@ -130,30 +109,17 @@ class VideoPlayerActivity : AppCompatActivity() {
             Log.d("VideoPlayerActivity", "Download button clicked, adding download item to Shared ViewModel: $downloadItem")
             fetchM3U8AndDownload(episodeInfo.id, selectedQuality, filePath)
         }
-    }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("VideoPlayerActivity", "Storage permission granted")
-                // Perform actions that require storage permission here
-            } else {
-                Log.e("VideoPlayerActivity", "Storage permission denied")
-                // Handle the case when permission is not granted
-            }
+        // Set up back button click listener
+        backButton.setOnClickListener {
+            onBackPressed() // Call the onBackPressed method to handle back navigation
         }
-    }
-
-    override fun onBackPressed() {
-        // Instead of finishing the activity, navigate back to the AnimeInfoFragment
-        super.onBackPressed()
-        // Optionally, you can add any specific logic here if needed
     }
 
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+                requestPermissions(arrayOf(android .Manifest.permission.POST_NOTIFICATIONS), 1)
             }
         }
     }
@@ -163,7 +129,7 @@ class VideoPlayerActivity : AppCompatActivity() {
             val channelId = "anime_download_channel"
             val channelName = "Anime Download"
             val channelDescription = "Notifications for anime downloads"
-            val importance = NotificationManager.IMPORTANCE_HIGH // Set to HIGH for more visibility
+            val importance = NotificationManager.IMPORTANCE_LOW
 
             val channel = NotificationChannel(channelId, channelName, importance).apply {
                 description = channelDescription
@@ -204,15 +170,10 @@ class VideoPlayerActivity : AppCompatActivity() {
                 availableQualities = streamingResponse.sources.map { it.quality }.distinct()
                 setupQualitySpinner(availableQualities)
 
-                // Ensure there's at least one quality available
-                if (availableQualities.isNotEmpty()) {
-                    val defaultQuality = availableQualities.first() // Use the first quality available
-                    fetchAndPlayVideo(episodeId, defaultQuality)
-                } else {
-                    Log.e("VideoPlayerActivity", "No available qualities found.")
-                }
+                val defaultQuality = availableQualities.firstOrNull() ?: "360p"
+                fetchAndPlayVideo(episodeId, defaultQuality)
             } catch (e: HttpException) {
-                Log.e("VideoPlayerActivity", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
+                Log.e(" VideoPlayerActivity ", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
             } catch (e: Exception) {
                 Log.e("VideoPlayerActivity", "Error fetching streaming links: $e")
             }
@@ -227,6 +188,9 @@ class VideoPlayerActivity : AppCompatActivity() {
         qualitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedQuality = qualities[position]
+                viewModel.player?.release()
+                viewModel.player = null
+
                 fetchAndPlayVideo(episodeInfo.id, selectedQuality)
             }
 
@@ -237,27 +201,22 @@ class VideoPlayerActivity : AppCompatActivity() {
     private fun fetchAndPlayVideo(episodeId: String, quality: String) {
         lifecycleScope.launch {
             try {
-                Log.d("VideoPlayerActivity", "Fetching streaming links for Episode ID: $episodeId, Quality: $quality")
                 val serverName = "gogocdn"
+                Log.d("VideoPlayerActivity", "Fetching streaming links for Episode ID: $episodeId, Server: $serverName, Quality: $quality")
                 val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
-
-                Log.d("VideoPlayerActivity", "Streaming Response: $streamingResponse")
 
                 val selectedSource = streamingResponse.sources.find { it.quality == quality }
                 if (selectedSource != null) {
                     val videoUrl = selectedSource.url
                     Log.d("VideoPlayerActivity", "Playing video with URL: $videoUrl")
 
-                    // Initialize or reuse the player
-                    if (viewModel.player == null) {
-                        viewModel.player = SimpleExoPlayer.Builder(this@VideoPlayerActivity).build()
-                        playerView.player = viewModel.player
-                    }
+                    viewModel.player = SimpleExoPlayer.Builder(this@VideoPlayerActivity).build()
+                    playerView.player = viewModel.player
 
-                    viewModel.player?.setMediaItem(MediaItem.fromUri(videoUrl))
+                    val mediaItem = MediaItem.fromUri(videoUrl)
+                    viewModel.player?.setMediaItem(mediaItem)
                     viewModel.player?.prepare()
-                    viewModel.player?.playWhenReady = true // Start playback
-                    Log.d("VideoPlayerActivity", "Video playback started")
+                    viewModel.player?.seekTo(viewModel.playbackPosition)
                 } else {
                     Log.e("VideoPlayerActivity", "No source found for quality: $quality")
                 }
@@ -265,6 +224,14 @@ class VideoPlayerActivity : AppCompatActivity() {
                 Log.e("VideoPlayerActivity", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
             } catch (e: Exception) {
                 Log.e("VideoPlayerActivity", "Error fetching streaming links: $e")
+            }
+        }
+    }
+
+    private fun checkStoragePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
             }
         }
     }
@@ -287,7 +254,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                             .setSmallIcon(R.drawable.download) // Replace with your download icon
                             .setContentTitle("Downloading Anime")
                             .setContentText("Download started...")
-                            .setPriority(NotificationCompat.PRIORITY_HIGH) // Set to HIGH
+                            .setPriority(NotificationCompat.PRIORITY_LOW)
                             .setOngoing(true) // Makes the notification ongoing
                         notificationManager.notify(notificationId, builder.build())
 
@@ -304,6 +271,10 @@ class VideoPlayerActivity : AppCompatActivity() {
                             val baseUrl = m3u8Url.substringBeforeLast("/")
                             val segmentUrls = parseM3U8(m3u8Content, baseUrl)
 
+                            // Change the file path to the Downloads folder
+                            val downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                            val filePath = File(downloadsFolder, "${animeInfo.title}_${episodeInfo.number}.mp4").absolutePath // Construct filePath here
+
                             downloadSegments(segmentUrls, filePath, notificationManager, notificationId)
                         }
                     } else {
@@ -317,7 +288,6 @@ class VideoPlayerActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun parseM3U8(m3u8Content: String, baseUrl: String): List<String> {
         val segmentUrls = mutableListOf<String>()
         val lines = m3u8Content.split("\n")
@@ -350,7 +320,7 @@ class VideoPlayerActivity : AppCompatActivity() {
 
             for ((index, url) in segmentUrls.withIndex()) {
                 Log.d("VideoPlayerActivity", "Downloading segment: $url")
-                val request = Request.Builder ().url(url).build()
+                val request = Request.Builder().url(url).build()
 
                 try {
                     client.newCall(request).execute().use { response ->
@@ -389,7 +359,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 .setSmallIcon(R.drawable.download) // Replace with your download icon
                 .setContentTitle("Anime Download Complete")
                 .setContentText("Download finished successfully!")
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // Set to HIGH
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setOngoing(false) // Makes the notification non-ongoing
                 .setProgress(0, 0, false) // Reset progress
             notificationManager.notify(notificationId, builder.build())
@@ -401,7 +371,7 @@ class VideoPlayerActivity : AppCompatActivity() {
             .setSmallIcon(R.drawable.download) // Replace with your download icon
             .setContentTitle("Downloading Anime")
             .setContentText("Download in progress... ($progressPercentage%)")
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // Set to HIGH
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true) // Makes the notification ongoing
             .setProgress(100, progressPercentage, false) // Update progress
         notificationManager.notify(notificationId, builder.build())
@@ -409,32 +379,12 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        Log.d("VideoPlayerActivity", "VideoPlayerActivity paused")
-        viewModel.playbackPosition = viewModel.player?.currentPosition ?:  0
+        viewModel.playbackPosition = viewModel.player?.currentPosition ?: 0
         viewModel.player?.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("VideoPlayerActivity", "VideoPlayerActivity destroyed")
         viewModel.player?.release()
-    }
-
-    private fun hideSystemUI() {
-        window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_IMMERSIVE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_FULLSCREEN
-                )
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-            hideSystemUI()
-        }
     }
 }
