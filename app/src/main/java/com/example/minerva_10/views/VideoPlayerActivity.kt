@@ -204,10 +204,15 @@ class VideoPlayerActivity : AppCompatActivity() {
                 availableQualities = streamingResponse.sources.map { it.quality }.distinct()
                 setupQualitySpinner(availableQualities)
 
-                val defaultQuality = availableQualities.firstOrNull() ?: "360p"
-                fetchAndPlayVideo(episodeId, defaultQuality)
+                // Ensure there's at least one quality available
+                if (availableQualities.isNotEmpty()) {
+                    val defaultQuality = availableQualities.first() // Use the first quality available
+                    fetchAndPlayVideo(episodeId, defaultQuality)
+                } else {
+                    Log.e("VideoPlayerActivity", "No available qualities found.")
+                }
             } catch (e: HttpException) {
-                Log.e(" VideoPlayerActivity ", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
+                Log.e("VideoPlayerActivity", "Error fetching streaming links: ${e.response()?.errorBody()?.string()}")
             } catch (e: Exception) {
                 Log.e("VideoPlayerActivity", "Error fetching streaming links: $e")
             }
@@ -236,20 +241,15 @@ class VideoPlayerActivity : AppCompatActivity() {
                 val serverName = "gogocdn"
                 val streamingResponse: StreamingResponse = apiService.getStreamingLinks(episodeId, serverName)
 
-                Log.d("VideoPlayerActivity", " Streaming Response: $streamingResponse")
+                Log.d("VideoPlayerActivity", "Streaming Response: $streamingResponse")
 
                 val selectedSource = streamingResponse.sources.find { it.quality == quality }
                 if (selectedSource != null) {
                     val videoUrl = selectedSource.url
                     Log.d("VideoPlayerActivity", "Playing video with URL: $videoUrl")
 
-                    // Check if the player is already initialized
+                    // Initialize or reuse the player
                     if (viewModel.player == null) {
-                        viewModel.player = SimpleExoPlayer.Builder(this@VideoPlayerActivity).build()
-                        playerView.player = viewModel.player
-                    } else {
-                        // Release the previous player instance before reinitializing
-                        viewModel.player?.release()
                         viewModel.player = SimpleExoPlayer.Builder(this@VideoPlayerActivity).build()
                         playerView.player = viewModel.player
                     }

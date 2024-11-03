@@ -158,8 +158,8 @@ class SearchFragment : Fragment(), SearchAdapter.OnItemClickListener {
                         id = it.id,
                         title = it.title,
                         image = it.image,
-                        releaseDate = it.releaseDate ?: "Unknown Release Date", // Default to a more informative string
-                        subOrDub = it.subOrDub ?: "Unknown" // Default to a more informative string
+                        releaseDate = it.releaseDate ?: "Release date: 2024", // Default to a more informative string
+                        subOrDub = it.subOrDub ?: "Sub" // Default to a more informative string
                     )
                 }.toMutableList() // Store in the new list
 

@@ -120,8 +120,9 @@ class AnimeInfoActivity : AppCompatActivity() {
         // Check if animeInfo is initialized and has episodes
         if (this::animeInfo.isInitialized && animeInfo.episodes.isNotEmpty()) {
             val firstEpisode = animeInfo.episodes[0]
+            Log.d("AnimeInfoActivity", "Playing first episode: ${firstEpisode.number}") // Log the episode title
             val intent = Intent(this, VideoPlayerActivity::class.java).apply {
-                putExtra("EP ISODE_INFO", firstEpisode) // Pass the first episode object
+                putExtra("EPISODE_INFO", firstEpisode) // Pass the first episode object
                 putExtra("ANIME_INFO", animeInfo) // Pass the anime info object
             }
             startActivity(intent)
